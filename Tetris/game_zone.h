@@ -4,6 +4,7 @@
 #include "base_shapes.h"
 #include <QGraphicsView>
 #include <QGraphicsScene>
+#include <QKeyEvent>
 
 class GameZone : public QGraphicsView
 {
@@ -13,6 +14,7 @@ public:
 	~GameZone();
 	void initView();
 protected:
+	virtual void keyPressEvent(QKeyEvent *event);
 private:
 	const int			m_iZoneWidth;
 	const int			m_iZoneHeight; 

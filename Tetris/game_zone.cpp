@@ -1,7 +1,7 @@
 #include "game_zone.h"
 
 GameZone::GameZone(QWidget * parent)
-	: m_iZoneWidth(14 * BLOCK_SIZE), m_iZoneHeight(500)
+	: m_iZoneWidth(18 * BLOCK_SIZE), m_iZoneHeight(32 * BLOCK_SIZE)
 {
 	this->setParent(parent);
 	m_pQGraphicsScene = new QGraphicsScene(this);
@@ -25,8 +25,35 @@ void GameZone::initView()
 	// Set rect of GraphicsScene.
 	m_pQGraphicsScene->setSceneRect(0, 0, m_iZoneWidth - 5, m_iZoneHeight - 5);
 	this->setScene(m_pQGraphicsScene);
+	
+	
 	// For test.
-	m_pShape = new ZShape();
+	m_pShape = new JShape();
 	m_pQGraphicsScene->addItem(m_pShape);
 	m_pShape->setPos(0, 0);
+	// Test end.
+}
+
+void GameZone::keyPressEvent(QKeyEvent *event)
+{
+	switch (event->key())
+	{
+	case Qt::Key_Down:
+		m_pShape->moveBy(0, 20);
+		// To do: is colliding.
+		break;
+	case Qt::Key_Up:
+		m_pShape->changeTransformation();
+		break;
+	case Qt::Key_Left:
+		m_pShape->moveBy(-20, 0);
+		// To do: is colliding.
+		break;
+	case Qt::Key_Right:
+		m_pShape->moveBy(20, 0);
+		// To do: is colliding.
+		break;
+	default:
+		break;
+	}
 }

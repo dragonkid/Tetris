@@ -5,6 +5,7 @@
 #include <QGraphicsItemGroup>
 #include <QList>
 #include <QTransform>
+#include <QTimer>
 
 enum ShapeType
 {
@@ -28,12 +29,15 @@ const QColor SHAPE_COLORS[7] = {
 	QColor(83, 153, 177, BLOCK_ALPHA)		// ZSHAPE
 };
 
-class BaseShape : public QGraphicsItemGroup
+class BaseShape : public QObject, public QGraphicsItemGroup
 {
+	Q_OBJECT
 public:
 	BaseShape();
 	virtual ~BaseShape() = 0;
+
 	const ShapeType getShapeType() const;
+	virtual void changeTransformation() = 0;
 protected:
 	ShapeType			m_eShapeType;
 	QList<OneBlock *>	m_qBaseShape;
@@ -42,6 +46,10 @@ protected:
 	void initShapeBlock(unsigned int num, ShapeType shapeType);
 	void destroyShapeBlock();
 private:
+	QTimer *	m_pQTimer;
+	int			m_iDownSpeed;
+public slots:
+	void slotsMoveDown();
 };
 
 class IShape : public BaseShape
@@ -49,6 +57,8 @@ class IShape : public BaseShape
 public:
 	IShape();
 	~IShape();
+
+	virtual void changeTransformation();
 protected:
 private:
 };
@@ -58,6 +68,8 @@ class JShape : public BaseShape
 public:
 	JShape();
 	~JShape();
+
+	virtual void changeTransformation();
 protected:
 private:
 };
@@ -67,6 +79,8 @@ class LShape : public BaseShape
 public:
 	LShape();
 	~LShape();
+
+	virtual void changeTransformation();
 protected:
 private:
 };
@@ -76,6 +90,8 @@ class TShape : public BaseShape
 public:
 	TShape();
 	~TShape();
+
+	virtual void changeTransformation();
 protected:
 private:
 };
@@ -85,6 +101,8 @@ class OShape : public BaseShape
 public:
 	OShape();
 	~OShape();
+
+	virtual void changeTransformation();
 protected:
 private:
 };
@@ -94,6 +112,8 @@ class SShape : public BaseShape
 public:
 	SShape();
 	~SShape();
+
+	virtual void changeTransformation();
 protected:
 private:
 };
@@ -103,6 +123,8 @@ class ZShape : public BaseShape
 public:
 	ZShape();
 	~ZShape();
+
+	virtual void changeTransformation();
 protected:
 private:
 };
