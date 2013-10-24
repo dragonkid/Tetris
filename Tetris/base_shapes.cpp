@@ -6,6 +6,7 @@
 // BaseShape
 BaseShape::BaseShape()
 {
+	m_bIsFixed = false;
 	// Set and initialize timer.
 	m_iDownSpeed = 1000;
 	m_pQTimer = new QTimer(this);
@@ -48,8 +49,36 @@ void BaseShape::destroyShapeBlock()
 void BaseShape::slotsMoveDown()
 {
 	this->moveBy(0, BLOCK_SIZE);
-	m_pQTimer->start(m_iDownSpeed);
-	// To do: is colliding.
+	if ( this->isColliding() )
+	{
+		m_pQTimer->stop();
+		this->setFixed();
+		this->moveBy(0, -BLOCK_SIZE);
+	}
+}
+
+bool BaseShape::isColliding() const
+{
+	QList<QGraphicsItem *> tmp_lstItems = this->childItems();	
+	QGraphicsItem * tmp_pItem = NULL;
+	foreach(tmp_pItem, tmp_lstItems)
+	{
+		if ( tmp_pItem->collidingItems().count() != 0 )
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+bool BaseShape::isFixed() const
+{
+	return m_bIsFixed;
+}
+
+void BaseShape::setFixed()
+{
+	m_bIsFixed = true;
 }
 
 // IShape
@@ -61,6 +90,7 @@ IShape::IShape()
 	m_qBaseShape.at(1)->setPos(1 * BLOCK_SIZE, 0 * BLOCK_SIZE);
 	m_qBaseShape.at(2)->setPos(2 * BLOCK_SIZE, 0 * BLOCK_SIZE);
 	m_qBaseShape.at(3)->setPos(3 * BLOCK_SIZE, 0 * BLOCK_SIZE);
+	this->setTransformOriginPoint(BLOCK_SIZE / 2, BLOCK_SIZE / 2);
 }
 
 IShape::~IShape()
@@ -68,9 +98,8 @@ IShape::~IShape()
 	
 }
 
-void IShape::changeTransformation()
+void IShape::changeRotation()
 {
-	this->setTransformOriginPoint(BLOCK_SIZE / 2, BLOCK_SIZE / 2);
 	if ( 0 == (static_cast<int>(this->rotation()) % 180) )
 	{
 		this->setRotation(this->rotation() + 90);
@@ -79,7 +108,6 @@ void IShape::changeTransformation()
 	{
 		this->setRotation(0);
 	}
-	// To do: is colliding.
 }
 
 // JShape
@@ -91,6 +119,7 @@ JShape::JShape()
 	m_qBaseShape.at(1)->setPos(1 * BLOCK_SIZE, 1 * BLOCK_SIZE);
 	m_qBaseShape.at(2)->setPos(1 * BLOCK_SIZE, 2 * BLOCK_SIZE);
 	m_qBaseShape.at(3)->setPos(0 * BLOCK_SIZE, 2 * BLOCK_SIZE);
+	this->setTransformOriginPoint(BLOCK_SIZE * 1.5, BLOCK_SIZE * 1.5);
 }
 
 JShape::~JShape()
@@ -98,9 +127,8 @@ JShape::~JShape()
 
 }
 
-void JShape::changeTransformation()
+void JShape::changeRotation()
 {
-	this->setTransformOriginPoint(BLOCK_SIZE * 1.5, BLOCK_SIZE * 1.5);
 	this->setRotation(this->rotation() + 90);
 }
 
@@ -120,7 +148,7 @@ LShape::~LShape()
 
 }
 
-void LShape::changeTransformation()
+void LShape::changeRotation()
 {
 	this->setTransformOriginPoint(BLOCK_SIZE * 1.5, BLOCK_SIZE * 1.5);
 	this->setRotation(this->rotation() + 90);
@@ -135,6 +163,7 @@ TShape::TShape()
 	m_qBaseShape.at(1)->setPos(0 * BLOCK_SIZE, 1 * BLOCK_SIZE);
 	m_qBaseShape.at(2)->setPos(1 * BLOCK_SIZE, 1 * BLOCK_SIZE);
 	m_qBaseShape.at(3)->setPos(2 * BLOCK_SIZE, 1 * BLOCK_SIZE);
+	this->setTransformOriginPoint(BLOCK_SIZE * 1.5, BLOCK_SIZE * 1.5);
 }
 
 TShape::~TShape()
@@ -142,9 +171,8 @@ TShape::~TShape()
 
 }
 
-void TShape::changeTransformation()
+void TShape::changeRotation()
 {
-	this->setTransformOriginPoint(BLOCK_SIZE * 1.5, BLOCK_SIZE * 1.5);
 	this->setRotation(this->rotation() + 90);
 }
 
@@ -164,7 +192,7 @@ OShape::~OShape()
 
 }
 
-void OShape::changeTransformation()
+void OShape::changeRotation()
 {
 
 }
@@ -178,6 +206,7 @@ SShape::SShape()
 	m_qBaseShape.at(1)->setPos(1 * BLOCK_SIZE, 1 * BLOCK_SIZE);
 	m_qBaseShape.at(2)->setPos(1 * BLOCK_SIZE, 0 * BLOCK_SIZE);
 	m_qBaseShape.at(3)->setPos(2 * BLOCK_SIZE, 0 * BLOCK_SIZE);
+	this->setTransformOriginPoint(BLOCK_SIZE * 1.5, BLOCK_SIZE * 1.5);
 }
 
 SShape::~SShape()
@@ -185,9 +214,8 @@ SShape::~SShape()
 
 }
 
-void SShape::changeTransformation()
+void SShape::changeRotation()
 {
-	this->setTransformOriginPoint(BLOCK_SIZE * 1.5, BLOCK_SIZE * 1.5);
 	this->setRotation(this->rotation() + 90);
 }
 
@@ -200,7 +228,7 @@ ZShape::ZShape()
 	m_qBaseShape.at(1)->setPos(1 * BLOCK_SIZE, 0 * BLOCK_SIZE);
 	m_qBaseShape.at(2)->setPos(1 * BLOCK_SIZE, 1 * BLOCK_SIZE);
 	m_qBaseShape.at(3)->setPos(2 * BLOCK_SIZE, 1 * BLOCK_SIZE);
-	this->setTransformOriginPoint(BLOCK_SIZE * 3 / 2, BLOCK_SIZE * 3 / 2);
+	this->setTransformOriginPoint(BLOCK_SIZE * 1.5, BLOCK_SIZE * 1.5);
 }
 
 ZShape::~ZShape()
@@ -208,8 +236,7 @@ ZShape::~ZShape()
 
 }
 
-void ZShape::changeTransformation()
+void ZShape::changeRotation()
 {
-	this->setTransformOriginPoint(BLOCK_SIZE * 1.5, BLOCK_SIZE * 1.5);
 	this->setRotation(this->rotation() + 90);
 }

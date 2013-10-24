@@ -5,6 +5,8 @@
 #include <QGraphicsView>
 #include <QGraphicsScene>
 #include <QKeyEvent>
+#include <QGraphicsLineItem>
+#include <QTransform>
 
 class GameZone : public QGraphicsView
 {
@@ -12,14 +14,26 @@ class GameZone : public QGraphicsView
 public:
 	GameZone(QWidget * parent = 0);
 	~GameZone();
+
 	void initView();
+	const qreal getWidth() const;
+	const qreal getHeight() const;
 protected:
 	virtual void keyPressEvent(QKeyEvent *event);
 private:
-	const int			m_iZoneWidth;
-	const int			m_iZoneHeight; 
+	const qreal			m_fSceneWidth;
+	const qreal			m_fSceneHeight;
+	const qreal			m_fZoneWidth;
+	const qreal			m_fZoneHeight; 
+	const QColor		m_qBackgroundColor;
 	BaseShape *			m_pShape;
-	QGraphicsScene *	m_pQGraphicsScene;
+	QGraphicsScene *	m_pScene;
+	QGraphicsLineItem * m_pBottomLine;
+	QGraphicsLineItem * m_pLeftLine;
+	QGraphicsLineItem * m_pRightLine;
+	qreal				m_fOldRotation;
+
+	void setShapeInitPos();
 };
 
 #endif

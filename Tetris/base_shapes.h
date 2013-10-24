@@ -4,7 +4,6 @@
 #include "one_block.h"
 #include <QGraphicsItemGroup>
 #include <QList>
-#include <QTransform>
 #include <QTimer>
 
 enum ShapeType
@@ -37,7 +36,10 @@ public:
 	virtual ~BaseShape() = 0;
 
 	const ShapeType getShapeType() const;
-	virtual void changeTransformation() = 0;
+	virtual void changeRotation() = 0;
+	bool isColliding() const;
+	bool isFixed() const;
+	void setFixed();
 protected:
 	ShapeType			m_eShapeType;
 	QList<OneBlock *>	m_qBaseShape;
@@ -46,8 +48,9 @@ protected:
 	void initShapeBlock(unsigned int num, ShapeType shapeType);
 	void destroyShapeBlock();
 private:
-	QTimer *	m_pQTimer;
-	int			m_iDownSpeed;
+	QTimer *			m_pQTimer;
+	int					m_iDownSpeed;
+	bool				m_bIsFixed;
 public slots:
 	void slotsMoveDown();
 };
@@ -58,7 +61,7 @@ public:
 	IShape();
 	~IShape();
 
-	virtual void changeTransformation();
+	virtual void changeRotation();
 protected:
 private:
 };
@@ -69,7 +72,7 @@ public:
 	JShape();
 	~JShape();
 
-	virtual void changeTransformation();
+	virtual void changeRotation();
 protected:
 private:
 };
@@ -80,7 +83,7 @@ public:
 	LShape();
 	~LShape();
 
-	virtual void changeTransformation();
+	virtual void changeRotation();
 protected:
 private:
 };
@@ -91,7 +94,7 @@ public:
 	TShape();
 	~TShape();
 
-	virtual void changeTransformation();
+	virtual void changeRotation();
 protected:
 private:
 };
@@ -102,7 +105,7 @@ public:
 	OShape();
 	~OShape();
 
-	virtual void changeTransformation();
+	virtual void changeRotation();
 protected:
 private:
 };
@@ -113,7 +116,7 @@ public:
 	SShape();
 	~SShape();
 
-	virtual void changeTransformation();
+	virtual void changeRotation();
 protected:
 private:
 };
@@ -124,7 +127,7 @@ public:
 	ZShape();
 	~ZShape();
 
-	virtual void changeTransformation();
+	virtual void changeRotation();
 protected:
 private:
 };

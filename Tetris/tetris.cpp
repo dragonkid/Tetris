@@ -6,6 +6,7 @@ Tetris::Tetris(QWidget *parent)
 	ui.setupUi(this);
 	m_pGameZone = new GameZone(this);
 	m_pGameZone->initView();
+	m_pGameZone->setGeometry(20, 20, m_pGameZone->getWidth(), m_pGameZone->getHeight());
 	m_pGameZone->show();
 }
 
