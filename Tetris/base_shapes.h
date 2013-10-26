@@ -40,6 +40,9 @@ public:
 	bool isColliding() const;
 	bool isFixed() const;
 	void setFixed();
+	virtual void randomRotation() = 0;
+	void restartTimer();
+	void stopTimer();
 protected:
 	ShapeType			m_eShapeType;
 	QList<OneBlock *>	m_qBaseShape;
@@ -52,7 +55,9 @@ private:
 	int					m_iDownSpeed;
 	bool				m_bIsFixed;
 public slots:
-	void slotsMoveDown();
+	void moveDown();
+signals:
+	void shapeFixed();
 };
 
 class IShape : public BaseShape
@@ -62,6 +67,7 @@ public:
 	~IShape();
 
 	virtual void changeRotation();
+	virtual void randomRotation();
 protected:
 private:
 };
@@ -73,6 +79,7 @@ public:
 	~JShape();
 
 	virtual void changeRotation();
+	virtual void randomRotation();
 protected:
 private:
 };
@@ -84,6 +91,7 @@ public:
 	~LShape();
 
 	virtual void changeRotation();
+	virtual void randomRotation();
 protected:
 private:
 };
@@ -95,6 +103,7 @@ public:
 	~TShape();
 
 	virtual void changeRotation();
+	virtual void randomRotation();
 protected:
 private:
 };
@@ -106,6 +115,7 @@ public:
 	~OShape();
 
 	virtual void changeRotation();
+	virtual void randomRotation();
 protected:
 private:
 };
@@ -117,6 +127,7 @@ public:
 	~SShape();
 
 	virtual void changeRotation();
+	virtual void randomRotation();
 protected:
 private:
 };
@@ -128,6 +139,7 @@ public:
 	~ZShape();
 
 	virtual void changeRotation();
+	virtual void randomRotation();
 protected:
 private:
 };

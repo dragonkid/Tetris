@@ -15,7 +15,7 @@ public:
 	GameZone(QWidget * parent = 0);
 	~GameZone();
 
-	void initView();
+	void gameStart();
 	const qreal getWidth() const;
 	const qreal getHeight() const;
 protected:
@@ -34,6 +34,10 @@ private:
 	qreal				m_fOldRotation;
 
 	void setShapeInitPos();
+public slots:
+	void createNewShape();
+signals:
+	void gameFinished();
 };
 
 #endif

@@ -2,16 +2,20 @@
 #include <QGraphicsWidget>
 #include <QMessageBox>
 #include <QString>
+#include <cstdlib>
+#include <ctime>
 
 // BaseShape
 BaseShape::BaseShape()
 {
 	m_bIsFixed = false;
 	// Set and initialize timer.
-	m_iDownSpeed = 1000;
+	m_iDownSpeed = 500;
 	m_pQTimer = new QTimer(this);
-	connect(m_pQTimer, SIGNAL(timeout()), this, SLOT(slotsMoveDown()));
+	connect(m_pQTimer, SIGNAL(timeout()), this, SLOT(moveDown()));
 	m_pQTimer->start(m_iDownSpeed);
+	// Random seed.
+	srand(time(NULL));
 }
 
 BaseShape::~BaseShape()
@@ -46,14 +50,14 @@ void BaseShape::destroyShapeBlock()
 	m_qBaseShape.erase(m_qBaseShape.begin(), m_qBaseShape.end());
 }
 
-void BaseShape::slotsMoveDown()
+void BaseShape::moveDown()
 {
 	this->moveBy(0, BLOCK_SIZE);
 	if ( this->isColliding() )
 	{
+		this->moveBy(0, -BLOCK_SIZE);
 		m_pQTimer->stop();
 		this->setFixed();
-		this->moveBy(0, -BLOCK_SIZE);
 	}
 }
 
@@ -79,6 +83,17 @@ bool BaseShape::isFixed() const
 void BaseShape::setFixed()
 {
 	m_bIsFixed = true;
+	emit shapeFixed();
+}
+
+void BaseShape::restartTimer()
+{
+	m_pQTimer->start(m_iDownSpeed);
+}
+
+void BaseShape::stopTimer()
+{
+	m_pQTimer->stop();
 }
 
 // IShape
@@ -110,14 +125,21 @@ void IShape::changeRotation()
 	}
 }
 
+void IShape::randomRotation()
+{
+	qreal tmp_randRotation = 0;
+	tmp_randRotation = 90 * (rand() % 2);
+	this->setRotation(tmp_randRotation);
+}
+
 // JShape
 JShape::JShape()
 {
 	m_eShapeType = JSHAPE;
 	this->initShapeBlock(4, JSHAPE);
 	m_qBaseShape.at(0)->setPos(1 * BLOCK_SIZE, 0 * BLOCK_SIZE);
-	m_qBaseShape.at(1)->setPos(1 * BLOCK_SIZE, 1 * BLOCK_SIZE);
-	m_qBaseShape.at(2)->setPos(1 * BLOCK_SIZE, 2 * BLOCK_SIZE);
+	m_qBaseShape.at(1)->setPos(0 * BLOCK_SIZE, 0 * BLOCK_SIZE);
+	m_qBaseShape.at(2)->setPos(0 * BLOCK_SIZE, 1 * BLOCK_SIZE);
 	m_qBaseShape.at(3)->setPos(0 * BLOCK_SIZE, 2 * BLOCK_SIZE);
 	this->setTransformOriginPoint(BLOCK_SIZE * 1.5, BLOCK_SIZE * 1.5);
 }
@@ -132,6 +154,17 @@ void JShape::changeRotation()
 	this->setRotation(this->rotation() + 90);
 }
 
+void JShape::randomRotation()
+{
+	qreal tmp_randRotation = 0;
+	tmp_randRotation = 90 * (rand() % 4);
+	this->setRotation(tmp_randRotation);
+	if ( 270 == (int)tmp_randRotation )
+	{
+		this->setY(-BLOCK_SIZE);
+	}
+}
+
 // LShape
 LShape::LShape()
 {
@@ -141,6 +174,7 @@ LShape::LShape()
 	m_qBaseShape.at(1)->setPos(0 * BLOCK_SIZE, 1 * BLOCK_SIZE);
 	m_qBaseShape.at(2)->setPos(0 * BLOCK_SIZE, 2 * BLOCK_SIZE);
 	m_qBaseShape.at(3)->setPos(1 * BLOCK_SIZE, 2 * BLOCK_SIZE);
+	this->setTransformOriginPoint(BLOCK_SIZE * 1.5, BLOCK_SIZE * 1.5);
 }
 
 LShape::~LShape()
@@ -150,8 +184,18 @@ LShape::~LShape()
 
 void LShape::changeRotation()
 {
-	this->setTransformOriginPoint(BLOCK_SIZE * 1.5, BLOCK_SIZE * 1.5);
 	this->setRotation(this->rotation() + 90);
+}
+
+void LShape::randomRotation()
+{
+	qreal tmp_randRotation = 0;
+	tmp_randRotation = 90 * (rand() % 4);
+	this->setRotation(tmp_randRotation);
+	if ( 270 == (int)tmp_randRotation )
+	{
+		this->setY(-BLOCK_SIZE);
+	}
 }
 
 // TShape
@@ -176,6 +220,17 @@ void TShape::changeRotation()
 	this->setRotation(this->rotation() + 90);
 }
 
+void TShape::randomRotation()
+{
+	qreal tmp_randRotation = 0;
+	tmp_randRotation = 90 * (rand() % 4);
+	this->setRotation(tmp_randRotation);
+	if ( 180 == (int)tmp_randRotation )
+	{
+		this->setY(-BLOCK_SIZE);
+	}
+}
+
 // OShape
 OShape::OShape()
 {
@@ -193,6 +248,11 @@ OShape::~OShape()
 }
 
 void OShape::changeRotation()
+{
+
+}
+
+void OShape::randomRotation()
 {
 
 }
@@ -219,6 +279,13 @@ void SShape::changeRotation()
 	this->setRotation(this->rotation() + 90);
 }
 
+void SShape::randomRotation()
+{
+	qreal tmp_randRotation = 0;
+	tmp_randRotation = 90 * (rand() % 2);
+	this->setRotation(tmp_randRotation);
+}
+
 // ZShape
 ZShape::ZShape()
 {
@@ -239,4 +306,11 @@ ZShape::~ZShape()
 void ZShape::changeRotation()
 {
 	this->setRotation(this->rotation() + 90);
+}
+
+void ZShape::randomRotation()
+{
+	qreal tmp_randRotation = 0;
+	tmp_randRotation = 90 * (rand() % 2);
+	this->setRotation(tmp_randRotation);
 }

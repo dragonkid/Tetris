@@ -1,8 +1,10 @@
 #include "game_zone.h"
+#include <cstdlib>
+#include <ctime>
 
 static const qreal SCENE_OFFSET = 2;
-static const qreal XNUM = 18;
-static const qreal YNUM = 30;
+static const qreal XNUM = 16;
+static const qreal YNUM = 26;
 
 GameZone::GameZone(QWidget * parent)
 	: m_fSceneWidth(XNUM * BLOCK_SIZE), 
@@ -38,14 +40,9 @@ GameZone::~GameZone()
 	m_pScene = NULL;
 }
 
-void GameZone::initView()
+void GameZone::gameStart()
 {	
-	// For test.
-	m_pShape = new IShape();
-	//m_pShape->setRotation(90);
-	m_pScene->addItem(m_pShape);
-	this->setShapeInitPos();
-	// Test end.
+	this->createNewShape();
 }
 
 void GameZone::keyPressEvent(QKeyEvent *event)
@@ -58,10 +55,12 @@ void GameZone::keyPressEvent(QKeyEvent *event)
 	{
 	case Qt::Key_Down:
 		m_pShape->moveBy(0, BLOCK_SIZE);
+		m_pShape->restartTimer();
 		if ( m_pShape->isColliding() )
 		{
-			m_pShape->setFixed();
 			m_pShape->moveBy(0, -BLOCK_SIZE);
+			m_pShape->stopTimer();
+			m_pShape->setFixed();
 		}
 		break;
 	case Qt::Key_Up:
@@ -103,7 +102,7 @@ const qreal GameZone::getHeight() const
 
 void GameZone::setShapeInitPos()
 {
-	int width;
+	int width = 0;
 	QRectF tmp = m_pShape->childrenBoundingRect();
 	if ( 0 == (m_pShape->rotation() / 180) )
 	{
@@ -114,7 +113,48 @@ void GameZone::setShapeInitPos()
 		width = m_pShape->childrenBoundingRect().height();
 	}
 
-	int x;
+	int x = 0;
 	x = m_fSceneWidth / 2 - (BLOCK_SIZE * (int)((width / BLOCK_SIZE) / 2));
-	m_pShape->setPos(x, 0);
+	m_pShape->setX(x);
+}
+
+void GameZone::createNewShape()
+{
+	srand(time(NULL));
+	int tmp_iRandShapeType = rand() % END;
+	switch (tmp_iRandShapeType)
+	{
+	case ISHAPE:
+		m_pShape = new IShape();
+		break;
+	case JSHAPE:
+		m_pShape = new JShape();
+		break;
+	case LSHAPE:
+		m_pShape = new LShape();
+		break;
+	case TSHAPE:
+		m_pShape = new TShape();
+		break;
+	case OSHAPE:
+		m_pShape = new OShape();
+		break;
+	case SSHAPE:
+		m_pShape = new SShape();
+		break;
+	case ZSHAPE:
+		m_pShape = new ZShape();
+		break;
+	default:
+		break;
+	}
+	m_pShape->randomRotation();	
+	m_pScene->addItem(m_pShape);
+	this->setShapeInitPos();
+	if ( m_pShape->isColliding() )
+	{
+		emit gameFinished();
+		return ;
+	}
+	connect(m_pShape, SIGNAL(shapeFixed()), this, SLOT(createNewShape()));
 }

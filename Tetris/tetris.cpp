@@ -4,10 +4,13 @@ Tetris::Tetris(QWidget *parent)
 	: QMainWindow(parent)
 {
 	ui.setupUi(this);
+
 	m_pGameZone = new GameZone(this);
-	m_pGameZone->initView();
-	m_pGameZone->setGeometry(20, 20, m_pGameZone->getWidth(), m_pGameZone->getHeight());
 	m_pGameZone->show();
+	m_pGameZone->gameStart();
+
+	this->setMinimumWidth(m_pGameZone->width());
+	this->setMinimumHeight(m_pGameZone->height());
 }
 
 Tetris::~Tetris()
