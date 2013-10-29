@@ -7,6 +7,9 @@
 #include <QKeyEvent>
 #include <QGraphicsLineItem>
 #include <QTransform>
+#include <vector>
+
+typedef std::vector<qreal> FullRow_Vec;
 
 class GameZone : public QGraphicsView
 {
@@ -34,8 +37,12 @@ private:
 	qreal				m_fOldRotation;
 
 	void setShapeInitPos();
+	void moveClearedRowsDown(const FullRow_Vec &);
+	void stopGame();
+	void continueGame();
 public slots:
 	void createNewShape();
+	void clearFullRows(const qreal, const qreal);
 signals:
 	void gameFinished();
 };

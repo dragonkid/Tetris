@@ -35,12 +35,12 @@ public:
         if (TetrisClass->objectName().isEmpty())
             TetrisClass->setObjectName(QStringLiteral("TetrisClass"));
         TetrisClass->resize(600, 400);
-        //menuBar = new QMenuBar(TetrisClass);
-        //menuBar->setObjectName(QStringLiteral("menuBar"));
-        //TetrisClass->setMenuBar(menuBar);
-        //mainToolBar = new QToolBar(TetrisClass);
-        //mainToolBar->setObjectName(QStringLiteral("mainToolBar"));
-        //TetrisClass->addToolBar(mainToolBar);
+        menuBar = new QMenuBar(TetrisClass);
+        menuBar->setObjectName(QStringLiteral("menuBar"));
+        TetrisClass->setMenuBar(menuBar);
+        mainToolBar = new QToolBar(TetrisClass);
+        mainToolBar->setObjectName(QStringLiteral("mainToolBar"));
+        TetrisClass->addToolBar(mainToolBar);
         centralWidget = new QWidget(TetrisClass);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         TetrisClass->setCentralWidget(centralWidget);

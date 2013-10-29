@@ -42,11 +42,15 @@ void BaseShape::initShapeBlock( unsigned int num, ShapeType shapeType )
 
 void BaseShape::destroyShapeBlock()
 {
-	for (QList<OneBlock *>::size_type i = 0; i < m_qBaseShape.size(); ++i)
-	{
-		delete m_qBaseShape[i];
-		m_qBaseShape[i] = NULL;
-	}
+	// Memory of OneBlocks in ShapeBlock managed by QGraphicsScene.
+// 	for (QList<OneBlock *>::size_type i = 0; i < m_qBaseShape.size(); ++i)
+// 	{
+// 		if ( NULL != m_qBaseShape[i] )
+// 		{
+// 			delete m_qBaseShape[i];
+// 			m_qBaseShape[i] = NULL;
+// 		}
+// 	}
 	m_qBaseShape.erase(m_qBaseShape.begin(), m_qBaseShape.end());
 }
 
@@ -55,20 +59,21 @@ void BaseShape::moveDown()
 	this->moveBy(0, BLOCK_SIZE);
 	if ( this->isColliding() )
 	{
-		this->moveBy(0, -BLOCK_SIZE);
 		m_pQTimer->stop();
 		this->setFixed();
 	}
 }
 
 bool BaseShape::isColliding() const
-{
+{	
 	QList<QGraphicsItem *> tmp_lstItems = this->childItems();	
 	QGraphicsItem * tmp_pItem = NULL;
 	foreach(tmp_pItem, tmp_lstItems)
 	{
 		if ( tmp_pItem->collidingItems().count() != 0 )
 		{
+			// debug
+			g_Debug << "Colliding items:" << tmp_pItem->collidingItems().count() << "\n";
 			return true;
 		}
 	}
@@ -83,7 +88,11 @@ bool BaseShape::isFixed() const
 void BaseShape::setFixed()
 {
 	m_bIsFixed = true;
-	emit shapeFixed();
+	this->moveBy(0, -BLOCK_SIZE);
+	qreal tmp_fScanStart = this->sceneBoundingRect().y();
+	qreal tmp_fScanEnd = this->sceneBoundingRect().y() + this->getShapeHeight();
+	this->clearBoxGroup();
+	emit clearFullRows(tmp_fScanStart, tmp_fScanEnd);
 }
 
 void BaseShape::restartTimer()
@@ -94,6 +103,44 @@ void BaseShape::restartTimer()
 void BaseShape::stopTimer()
 {
 	m_pQTimer->stop();
+}
+
+qreal BaseShape::getShapeWidth()
+{
+	qreal width = 0;
+	QRectF tmp = this->childrenBoundingRect();
+	if ( 0 == (this->rotation() / 180) )
+	{
+		width = this->childrenBoundingRect().width();
+	}
+	else
+	{
+		width = this->childrenBoundingRect().height();
+	}
+	return width;
+}
+
+qreal BaseShape::getShapeHeight()
+{
+	qreal height = 0;
+	QRectF tmp = this->childrenBoundingRect();
+	if ( 0 == (this->rotation() / 180) )
+	{
+		height = this->childrenBoundingRect().height();
+	}
+	else
+	{
+		height = this->childrenBoundingRect().width();
+	}
+	return height;
+}
+
+void BaseShape::clearBoxGroup()
+{
+	foreach(QGraphicsItem * item, this->childItems())
+	{
+		this->removeFromGroup(item);
+	}
 }
 
 // IShape
@@ -127,8 +174,7 @@ void IShape::changeRotation()
 
 void IShape::randomRotation()
 {
-	qreal tmp_randRotation = 0;
-	tmp_randRotation = 90 * (rand() % 2);
+	qreal tmp_randRotation = 90 * (rand() % 2);
 	this->setRotation(tmp_randRotation);
 }
 
@@ -137,11 +183,11 @@ JShape::JShape()
 {
 	m_eShapeType = JSHAPE;
 	this->initShapeBlock(4, JSHAPE);
-	m_qBaseShape.at(0)->setPos(1 * BLOCK_SIZE, 0 * BLOCK_SIZE);
-	m_qBaseShape.at(1)->setPos(0 * BLOCK_SIZE, 0 * BLOCK_SIZE);
-	m_qBaseShape.at(2)->setPos(0 * BLOCK_SIZE, 1 * BLOCK_SIZE);
-	m_qBaseShape.at(3)->setPos(0 * BLOCK_SIZE, 2 * BLOCK_SIZE);
-	this->setTransformOriginPoint(BLOCK_SIZE * 1.5, BLOCK_SIZE * 1.5);
+	m_qBaseShape.at(0)->setPos(0 * BLOCK_SIZE, 0 * BLOCK_SIZE);
+	m_qBaseShape.at(1)->setPos(0 * BLOCK_SIZE, 1 * BLOCK_SIZE);
+	m_qBaseShape.at(2)->setPos(0 * BLOCK_SIZE, 2 * BLOCK_SIZE);
+	m_qBaseShape.at(3)->setPos(1 * BLOCK_SIZE, 0 * BLOCK_SIZE);
+	this->setTransformOriginPoint(BLOCK_SIZE * 0.5, BLOCK_SIZE * 1.5);
 }
 
 JShape::~JShape()
@@ -156,12 +202,12 @@ void JShape::changeRotation()
 
 void JShape::randomRotation()
 {
-	qreal tmp_randRotation = 0;
-	tmp_randRotation = 90 * (rand() % 4);
+	qreal tmp_randRotation = 90 * (rand() % 4);
 	this->setRotation(tmp_randRotation);
 	if ( 270 == (int)tmp_randRotation )
 	{
-		this->setY(-BLOCK_SIZE);
+		//this->setY(-BLOCK_SIZE);
+		this->moveBy(0, -BLOCK_SIZE);
 	}
 }
 
@@ -174,7 +220,7 @@ LShape::LShape()
 	m_qBaseShape.at(1)->setPos(0 * BLOCK_SIZE, 1 * BLOCK_SIZE);
 	m_qBaseShape.at(2)->setPos(0 * BLOCK_SIZE, 2 * BLOCK_SIZE);
 	m_qBaseShape.at(3)->setPos(1 * BLOCK_SIZE, 2 * BLOCK_SIZE);
-	this->setTransformOriginPoint(BLOCK_SIZE * 1.5, BLOCK_SIZE * 1.5);
+	this->setTransformOriginPoint(BLOCK_SIZE * 0.5, BLOCK_SIZE * 1.5);
 }
 
 LShape::~LShape()
@@ -189,12 +235,12 @@ void LShape::changeRotation()
 
 void LShape::randomRotation()
 {
-	qreal tmp_randRotation = 0;
-	tmp_randRotation = 90 * (rand() % 4);
+	qreal tmp_randRotation = 90 * (rand() % 4);
 	this->setRotation(tmp_randRotation);
 	if ( 270 == (int)tmp_randRotation )
 	{
-		this->setY(-BLOCK_SIZE);
+		//this->setY(-BLOCK_SIZE);
+		this->moveBy(0, -BLOCK_SIZE);
 	}
 }
 
@@ -222,12 +268,12 @@ void TShape::changeRotation()
 
 void TShape::randomRotation()
 {
-	qreal tmp_randRotation = 0;
-	tmp_randRotation = 90 * (rand() % 4);
+	qreal tmp_randRotation = 90 * (rand() % 4);
 	this->setRotation(tmp_randRotation);
 	if ( 180 == (int)tmp_randRotation )
 	{
-		this->setY(-BLOCK_SIZE);
+		//this->setY(-BLOCK_SIZE);
+		this->moveBy(0, -BLOCK_SIZE);
 	}
 }
 
@@ -281,8 +327,7 @@ void SShape::changeRotation()
 
 void SShape::randomRotation()
 {
-	qreal tmp_randRotation = 0;
-	tmp_randRotation = 90 * (rand() % 2);
+	qreal tmp_randRotation = 90 * (rand() % 2);
 	this->setRotation(tmp_randRotation);
 }
 
@@ -310,7 +355,6 @@ void ZShape::changeRotation()
 
 void ZShape::randomRotation()
 {
-	qreal tmp_randRotation = 0;
-	tmp_randRotation = 90 * (rand() % 2);
+	qreal tmp_randRotation = 90 * (rand() % 2);
 	this->setRotation(tmp_randRotation);
 }

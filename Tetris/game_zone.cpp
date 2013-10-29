@@ -1,10 +1,13 @@
 #include "game_zone.h"
 #include <cstdlib>
 #include <ctime>
+#include <QPropertyAnimation>
+#include <QGraphicsBlurEffect>
+#include <QGraphicsOpacityEffect>
 
 static const qreal SCENE_OFFSET = 2;
-static const qreal XNUM = 16;
-static const qreal YNUM = 26;
+static const qreal XNUM = 6;
+static const qreal YNUM = 16;
 
 GameZone::GameZone(QWidget * parent)
 	: m_fSceneWidth(XNUM * BLOCK_SIZE), 
@@ -58,7 +61,6 @@ void GameZone::keyPressEvent(QKeyEvent *event)
 		m_pShape->restartTimer();
 		if ( m_pShape->isColliding() )
 		{
-			m_pShape->moveBy(0, -BLOCK_SIZE);
 			m_pShape->stopTimer();
 			m_pShape->setFixed();
 		}
@@ -85,6 +87,12 @@ void GameZone::keyPressEvent(QKeyEvent *event)
 			m_pShape->moveBy(-BLOCK_SIZE, 0);
 		}
 		break;
+	case Qt::Key_Space:
+		this->stopGame();
+		break;
+	case Qt::Key_V:
+		this->continueGame();
+		break;
 	default:
 		break;
 	}
@@ -102,20 +110,9 @@ const qreal GameZone::getHeight() const
 
 void GameZone::setShapeInitPos()
 {
-	int width = 0;
-	QRectF tmp = m_pShape->childrenBoundingRect();
-	if ( 0 == (m_pShape->rotation() / 180) )
-	{
-		width = m_pShape->childrenBoundingRect().width();
-	}
-	else
-	{
-		width = m_pShape->childrenBoundingRect().height();
-	}
-
-	int x = 0;
-	x = m_fSceneWidth / 2 - (BLOCK_SIZE * (int)((width / BLOCK_SIZE) / 2));
-	m_pShape->setX(x);
+	int width = m_pShape->getShapeWidth();
+	int x = m_fSceneWidth / 2 - (BLOCK_SIZE * (int)((width / BLOCK_SIZE) / 2));
+	m_pShape->moveBy(x, 0);
 }
 
 void GameZone::createNewShape()
@@ -148,7 +145,7 @@ void GameZone::createNewShape()
 	default:
 		break;
 	}
-	m_pShape->randomRotation();	
+	//m_pShape->randomRotation();	
 	m_pScene->addItem(m_pShape);
 	this->setShapeInitPos();
 	if ( m_pShape->isColliding() )
@@ -156,5 +153,73 @@ void GameZone::createNewShape()
 		emit gameFinished();
 		return ;
 	}
-	connect(m_pShape, SIGNAL(shapeFixed()), this, SLOT(createNewShape()));
+	connect(m_pShape, SIGNAL(clearFullRows(const qreal, const qreal)), 
+		this, SLOT(clearFullRows(const qreal, const qreal)));
+}
+
+void GameZone::clearFullRows(const qreal in_fStart, const qreal in_fEnd)
+{
+	FullRow_Vec tmp_vecFullRow;
+	tmp_vecFullRow.clear();
+
+	QRectF tmp_qScanRect(-0.5, 0, m_fSceneWidth + 1, BLOCK_SIZE + 1);
+	for (qreal y = in_fStart; y < in_fEnd; y += BLOCK_SIZE)
+	{
+		tmp_qScanRect.setY(y - 0.5);
+		tmp_qScanRect.setHeight(BLOCK_SIZE + 1);
+		QList<QGraphicsItem *> tmp_lstItems = m_pScene->items(tmp_qScanRect, Qt::ContainsItemShape);
+		// debug
+		g_Debug << "Rect.x = " << tmp_qScanRect.x()
+				<< "Rect.y = " << tmp_qScanRect.y()
+				<< "Rect.width = " << tmp_qScanRect.width()
+				<< "Rect.height = " << tmp_qScanRect.height()
+				<< "Items num in zone:" << tmp_lstItems.count() << "\n";
+		if ( XNUM == tmp_lstItems.count() )	// Full row.
+		{
+			foreach(QGraphicsItem *item, tmp_lstItems) 
+			{
+				QGraphicsBlurEffect *blur_effect = new QGraphicsBlurEffect;
+				item->setGraphicsEffect(blur_effect);
+				delete item;
+			}
+			tmp_vecFullRow.push_back(y);
+		}
+	}
+	if ( 0 != tmp_vecFullRow.size() )
+	{
+		this->moveClearedRowsDown(tmp_vecFullRow);
+	}
+
+	this->createNewShape();
+}
+
+void GameZone::moveClearedRowsDown( const FullRow_Vec & in_vecFulls )
+{
+	QRectF tmp_qMoveRect(-0.5, 0, m_fSceneWidth + 1, 0);
+	for ( FullRow_Vec::size_type i = 0; i < in_vecFulls.size(); ++i )
+	{
+		tmp_qMoveRect.setHeight(in_vecFulls[i] + 1);
+		QList<QGraphicsItem *> tmp_lstItems = m_pScene->items(tmp_qMoveRect, Qt::ContainsItemShape);
+		foreach(QGraphicsItem * item, tmp_lstItems)
+		{
+			// debug
+			g_Debug << "x:" << item->x() << "y:" << item->y() << "\n";
+			item->moveBy(0, BLOCK_SIZE);
+		}
+	}
+}
+
+void GameZone::stopGame()
+{
+	// debug
+	g_pLogfile->close();
+	m_pShape->stopTimer();
+	//m_pShape->setMoveable(false);
+}
+
+void GameZone::continueGame()
+{
+	g_pLogfile->open(QIODevice::Append | QIODevice::Text);
+	m_pShape->restartTimer();
+	//m_pShape->setMoveable(true);
 }

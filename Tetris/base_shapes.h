@@ -43,6 +43,8 @@ public:
 	virtual void randomRotation() = 0;
 	void restartTimer();
 	void stopTimer();
+	qreal getShapeWidth();
+	qreal getShapeHeight();
 protected:
 	ShapeType			m_eShapeType;
 	QList<OneBlock *>	m_qBaseShape;
@@ -54,10 +56,12 @@ private:
 	QTimer *			m_pQTimer;
 	int					m_iDownSpeed;
 	bool				m_bIsFixed;
+
+	void clearBoxGroup();
 public slots:
 	void moveDown();
 signals:
-	void shapeFixed();
+	void clearFullRows(const qreal, const qreal);
 };
 
 class IShape : public BaseShape
