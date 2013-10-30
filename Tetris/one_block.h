@@ -23,6 +23,7 @@ class OneBlock : public QGraphicsRectItem, public QObject
 public:
 	OneBlock(const QColor & in_qColor, QGraphicsItem * parent = 0);
 	~OneBlock();
+
 protected:
 private:
 	const QRectF	m_qRectF;

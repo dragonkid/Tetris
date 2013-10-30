@@ -91,6 +91,13 @@ void BaseShape::setFixed()
 	this->moveBy(0, -BLOCK_SIZE);
 	qreal tmp_fScanStart = this->sceneBoundingRect().y();
 	qreal tmp_fScanEnd = this->sceneBoundingRect().y() + this->getShapeHeight();
+	if ( (180 == this->rotation()) || (270 == this->rotation()) )
+	{
+		tmp_fScanStart -= this->getShapeHeight();
+		tmp_fScanEnd = this->sceneBoundingRect().y();
+	}
+	// debug
+	g_Debug << "Shape height = " << this->getShapeHeight() << "\n";
 	this->clearBoxGroup();
 	emit clearFullRows(tmp_fScanStart, tmp_fScanEnd);
 }
@@ -109,7 +116,7 @@ qreal BaseShape::getShapeWidth()
 {
 	qreal width = 0;
 	QRectF tmp = this->childrenBoundingRect();
-	if ( 0 == (this->rotation() / 180) )
+	if ( 0 == ((int)this->rotation() % 180) )
 	{
 		width = this->childrenBoundingRect().width();
 	}
@@ -124,7 +131,7 @@ qreal BaseShape::getShapeHeight()
 {
 	qreal height = 0;
 	QRectF tmp = this->childrenBoundingRect();
-	if ( 0 == (this->rotation() / 180) )
+	if ( 0 == ((int)this->rotation() % 180) )
 	{
 		height = this->childrenBoundingRect().height();
 	}
