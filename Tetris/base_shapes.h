@@ -43,11 +43,12 @@ public:
 	virtual void randomRotation() = 0;
 	void restartTimer();
 	void stopTimer();
-	qreal getShapeWidth();
-	qreal getShapeHeight();
+	const qreal getShapeWidth() const;
+	const qreal getShapeHeight() const;
+	virtual QRectF boundingRect() const;
 protected:
 	ShapeType			m_eShapeType;
-	QList<OneBlock *>	m_qBaseShape;
+	//QList<OneBlock *>	m_qBaseShape;
 	QTransform			m_qOldTransform;
 
 	void initShapeBlock(unsigned int num, ShapeType shapeType);
