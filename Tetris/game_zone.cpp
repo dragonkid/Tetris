@@ -6,8 +6,8 @@
 #include <QGraphicsOpacityEffect>
 
 static const qreal SCENE_OFFSET = 2;
-static const qreal XNUM = 6;
-static const qreal YNUM = 16;
+static const qreal XNUM = 16;
+static const qreal YNUM = 26;
 
 GameZone::GameZone(QWidget * parent)
 	: m_fSceneWidth(XNUM * BLOCK_SIZE), 
