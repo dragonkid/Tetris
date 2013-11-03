@@ -13,3 +13,11 @@ OneBlock::~OneBlock()
 {
 
 }
+
+
+QRectF OneBlock::boundingRect() const
+{
+	qreal penWidth = 1;
+	return QRectF(penWidth / 2, penWidth / 2, BLOCK_SIZE - 1, BLOCK_SIZE - 1);
+}
+

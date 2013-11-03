@@ -35,7 +35,7 @@ void BaseShape::initShapeBlock( unsigned int num, ShapeType shapeType )
 		OneBlock * tmp_pOneBlock = new OneBlock(SHAPE_COLORS[shapeType], this);
 		if ( NULL != tmp_pOneBlock )
 		{
-			m_qBaseShape.append(tmp_pOneBlock);
+			this->addToGroup(tmp_pOneBlock);
 		}
 	}
 }
@@ -43,15 +43,16 @@ void BaseShape::initShapeBlock( unsigned int num, ShapeType shapeType )
 void BaseShape::destroyShapeBlock()
 {
 	// Memory of OneBlocks in ShapeBlock managed by QGraphicsScene.
-// 	for (QList<OneBlock *>::size_type i = 0; i < m_qBaseShape.size(); ++i)
-// 	{
-// 		if ( NULL != m_qBaseShape[i] )
-// 		{
-// 			delete m_qBaseShape[i];
-// 			m_qBaseShape[i] = NULL;
-// 		}
-// 	}
-	m_qBaseShape.erase(m_qBaseShape.begin(), m_qBaseShape.end());
+	QList<QGraphicsItem *> tmp_lstItems = this->childItems();
+ 	for (QList<QGraphicsItem *>::size_type i = 0; i < tmp_lstItems.count(); ++i)
+ 	{
+ 		if ( NULL != tmp_lstItems[i] )
+ 		{
+			this->removeFromGroup(tmp_lstItems[i]);
+ 			delete tmp_lstItems[i];
+ 			tmp_lstItems[i] = NULL;
+ 		}
+ 	}
 }
 
 void BaseShape::moveDown()
@@ -72,6 +73,7 @@ bool BaseShape::isColliding() const
 	{
 		if ( tmp_pItem->collidingItems().count() != 0 )
 		{
+			QList<QGraphicsItem *> tmp = tmp_pItem->collidingItems();
 			// debug
 			g_Debug << "Colliding items:" << tmp_pItem->collidingItems().count() << "\n";
 			return true;
@@ -93,11 +95,9 @@ void BaseShape::setFixed()
 	qreal tmp_fScanEnd = this->sceneBoundingRect().y() + this->getShapeHeight();
 	if ( (180 == this->rotation()) || (270 == this->rotation()) )
 	{
-		tmp_fScanStart -= this->getShapeHeight();
-		tmp_fScanEnd = this->sceneBoundingRect().y();
+		tmp_fScanStart -= (this->getShapeHeight() + 1);
+		tmp_fScanEnd = this->sceneBoundingRect().y() - 1;
 	}
-	// debug
-	g_Debug << "Shape height = " << this->getShapeHeight() << "\n";
 	this->clearBoxGroup();
 	emit clearFullRows(tmp_fScanStart, tmp_fScanEnd);
 }
@@ -112,11 +112,10 @@ void BaseShape::stopTimer()
 	m_pQTimer->stop();
 }
 
-qreal BaseShape::getShapeWidth()
+const qreal BaseShape::getShapeWidth() const
 {
 	qreal width = 0;
-	QRectF tmp = this->childrenBoundingRect();
-	if ( 0 == ((int)this->rotation() % 180) )
+	if ( 0 == (static_cast<int>(this->rotation()) % 180) )
 	{
 		width = this->childrenBoundingRect().width();
 	}
@@ -127,11 +126,10 @@ qreal BaseShape::getShapeWidth()
 	return width;
 }
 
-qreal BaseShape::getShapeHeight()
+const qreal BaseShape::getShapeHeight() const
 {
 	qreal height = 0;
-	QRectF tmp = this->childrenBoundingRect();
-	if ( 0 == ((int)this->rotation() % 180) )
+	if ( 0 == (static_cast<int>(this->rotation()) % 180) )
 	{
 		height = this->childrenBoundingRect().height();
 	}
@@ -152,7 +150,7 @@ void BaseShape::clearBoxGroup()
 
 QRectF BaseShape::boundingRect() const
 {
-	return QRectF(0,0,0,0);
+	return QRectF(0, 0, 0, 0);
 }
 
 // IShape
@@ -160,10 +158,11 @@ IShape::IShape()
 {
 	m_eShapeType = ISHAPE;
 	this->initShapeBlock(4, ISHAPE);
-	m_qBaseShape.at(0)->setPos(0 * BLOCK_SIZE, 0 * BLOCK_SIZE);
-	m_qBaseShape.at(1)->setPos(1 * BLOCK_SIZE, 0 * BLOCK_SIZE);
-	m_qBaseShape.at(2)->setPos(2 * BLOCK_SIZE, 0 * BLOCK_SIZE);
-	m_qBaseShape.at(3)->setPos(3 * BLOCK_SIZE, 0 * BLOCK_SIZE);
+	QList<QGraphicsItem *> tmp_lstItems = this->childItems();
+	tmp_lstItems.at(0)->setPos(0 * BLOCK_SIZE, 0 * BLOCK_SIZE);
+	tmp_lstItems.at(1)->setPos(1 * BLOCK_SIZE, 0 * BLOCK_SIZE);
+	tmp_lstItems.at(2)->setPos(2 * BLOCK_SIZE, 0 * BLOCK_SIZE);
+	tmp_lstItems.at(3)->setPos(3 * BLOCK_SIZE, 0 * BLOCK_SIZE);
 	this->setTransformOriginPoint(BLOCK_SIZE / 2, BLOCK_SIZE / 2);
 }
 
@@ -195,10 +194,11 @@ JShape::JShape()
 {
 	m_eShapeType = JSHAPE;
 	this->initShapeBlock(4, JSHAPE);
-	m_qBaseShape.at(0)->setPos(0 * BLOCK_SIZE, 0 * BLOCK_SIZE);
-	m_qBaseShape.at(1)->setPos(0 * BLOCK_SIZE, 1 * BLOCK_SIZE);
-	m_qBaseShape.at(2)->setPos(0 * BLOCK_SIZE, 2 * BLOCK_SIZE);
-	m_qBaseShape.at(3)->setPos(1 * BLOCK_SIZE, 0 * BLOCK_SIZE);
+	QList<QGraphicsItem *> tmp_lstItems = this->childItems();
+	tmp_lstItems.at(0)->setPos(0 * BLOCK_SIZE, 0 * BLOCK_SIZE);
+	tmp_lstItems.at(1)->setPos(0 * BLOCK_SIZE, 1 * BLOCK_SIZE);
+	tmp_lstItems.at(2)->setPos(0 * BLOCK_SIZE, 2 * BLOCK_SIZE);
+	tmp_lstItems.at(3)->setPos(1 * BLOCK_SIZE, 0 * BLOCK_SIZE);
 	this->setTransformOriginPoint(BLOCK_SIZE * 0.5, BLOCK_SIZE * 1.5);
 }
 
@@ -209,7 +209,14 @@ JShape::~JShape()
 
 void JShape::changeRotation()
 {
-	this->setRotation(this->rotation() + 90);
+	if ( 360 == static_cast<int>(this->rotation()) )
+	{
+		this->setRotation(90);
+	}
+	else
+	{
+		this->setRotation(this->rotation() + 90);
+	}
 }
 
 void JShape::randomRotation()
@@ -228,10 +235,11 @@ LShape::LShape()
 {
 	m_eShapeType = LSHAPE;
 	this->initShapeBlock(4, LSHAPE);
-	m_qBaseShape.at(0)->setPos(0 * BLOCK_SIZE, 0 * BLOCK_SIZE);
-	m_qBaseShape.at(1)->setPos(0 * BLOCK_SIZE, 1 * BLOCK_SIZE);
-	m_qBaseShape.at(2)->setPos(0 * BLOCK_SIZE, 2 * BLOCK_SIZE);
-	m_qBaseShape.at(3)->setPos(1 * BLOCK_SIZE, 2 * BLOCK_SIZE);
+	QList<QGraphicsItem *> tmp_lstItems = this->childItems();
+	tmp_lstItems.at(0)->setPos(0 * BLOCK_SIZE, 0 * BLOCK_SIZE);
+	tmp_lstItems.at(1)->setPos(0 * BLOCK_SIZE, 1 * BLOCK_SIZE);
+	tmp_lstItems.at(2)->setPos(0 * BLOCK_SIZE, 2 * BLOCK_SIZE);
+	tmp_lstItems.at(3)->setPos(1 * BLOCK_SIZE, 2 * BLOCK_SIZE);
 	this->setTransformOriginPoint(BLOCK_SIZE * 0.5, BLOCK_SIZE * 1.5);
 }
 
@@ -242,7 +250,14 @@ LShape::~LShape()
 
 void LShape::changeRotation()
 {
-	this->setRotation(this->rotation() + 90);
+	if ( 360 == static_cast<int>(this->rotation()) )
+	{
+		this->setRotation(90);
+	}
+	else
+	{
+		this->setRotation(this->rotation() + 90);
+	}
 }
 
 void LShape::randomRotation()
@@ -251,7 +266,6 @@ void LShape::randomRotation()
 	this->setRotation(tmp_randRotation);
 	if ( 270 == (int)tmp_randRotation )
 	{
-		//this->setY(-BLOCK_SIZE);
 		this->moveBy(0, -BLOCK_SIZE);
 	}
 }
@@ -261,10 +275,11 @@ TShape::TShape()
 {
 	m_eShapeType = TSHAPE;
 	this->initShapeBlock(4, TSHAPE);
-	m_qBaseShape.at(0)->setPos(1 * BLOCK_SIZE, 0 * BLOCK_SIZE);
-	m_qBaseShape.at(1)->setPos(0 * BLOCK_SIZE, 1 * BLOCK_SIZE);
-	m_qBaseShape.at(2)->setPos(1 * BLOCK_SIZE, 1 * BLOCK_SIZE);
-	m_qBaseShape.at(3)->setPos(2 * BLOCK_SIZE, 1 * BLOCK_SIZE);
+	QList<QGraphicsItem *> tmp_lstItems = this->childItems();
+	tmp_lstItems.at(0)->setPos(1 * BLOCK_SIZE, 0 * BLOCK_SIZE);
+	tmp_lstItems.at(1)->setPos(0 * BLOCK_SIZE, 1 * BLOCK_SIZE);
+	tmp_lstItems.at(2)->setPos(1 * BLOCK_SIZE, 1 * BLOCK_SIZE);
+	tmp_lstItems.at(3)->setPos(2 * BLOCK_SIZE, 1 * BLOCK_SIZE);
 	this->setTransformOriginPoint(BLOCK_SIZE * 1.5, BLOCK_SIZE * 1.5);
 }
 
@@ -275,7 +290,14 @@ TShape::~TShape()
 
 void TShape::changeRotation()
 {
-	this->setRotation(this->rotation() + 90);
+	if ( 360 == static_cast<int>(this->rotation()) )
+	{
+		this->setRotation(90);
+	}
+	else
+	{
+		this->setRotation(this->rotation() + 90);
+	}
 }
 
 void TShape::randomRotation()
@@ -294,10 +316,11 @@ OShape::OShape()
 {
 	m_eShapeType = OSHAPE;
 	this->initShapeBlock(4, OSHAPE);
-	m_qBaseShape.at(0)->setPos(0 * BLOCK_SIZE, 0 * BLOCK_SIZE);
-	m_qBaseShape.at(1)->setPos(0 * BLOCK_SIZE, 1 * BLOCK_SIZE);
-	m_qBaseShape.at(2)->setPos(1 * BLOCK_SIZE, 0 * BLOCK_SIZE);
-	m_qBaseShape.at(3)->setPos(1 * BLOCK_SIZE, 1 * BLOCK_SIZE);
+	QList<QGraphicsItem *> tmp_lstItems = this->childItems();
+	tmp_lstItems.at(0)->setPos(0 * BLOCK_SIZE, 0 * BLOCK_SIZE);
+	tmp_lstItems.at(1)->setPos(0 * BLOCK_SIZE, 1 * BLOCK_SIZE);
+	tmp_lstItems.at(2)->setPos(1 * BLOCK_SIZE, 0 * BLOCK_SIZE);
+	tmp_lstItems.at(3)->setPos(1 * BLOCK_SIZE, 1 * BLOCK_SIZE);
 }
 
 OShape::~OShape()
@@ -320,10 +343,11 @@ SShape::SShape()
 {
 	m_eShapeType = SSHAPE;
 	this->initShapeBlock(4, SSHAPE);
-	m_qBaseShape.at(0)->setPos(0 * BLOCK_SIZE, 1 * BLOCK_SIZE);
-	m_qBaseShape.at(1)->setPos(1 * BLOCK_SIZE, 1 * BLOCK_SIZE);
-	m_qBaseShape.at(2)->setPos(1 * BLOCK_SIZE, 0 * BLOCK_SIZE);
-	m_qBaseShape.at(3)->setPos(2 * BLOCK_SIZE, 0 * BLOCK_SIZE);
+	QList<QGraphicsItem *> tmp_lstItems = this->childItems();
+	tmp_lstItems.at(0)->setPos(0 * BLOCK_SIZE, 1 * BLOCK_SIZE);
+	tmp_lstItems.at(1)->setPos(1 * BLOCK_SIZE, 1 * BLOCK_SIZE);
+	tmp_lstItems.at(2)->setPos(1 * BLOCK_SIZE, 0 * BLOCK_SIZE);
+	tmp_lstItems.at(3)->setPos(2 * BLOCK_SIZE, 0 * BLOCK_SIZE);
 	this->setTransformOriginPoint(BLOCK_SIZE * 1.5, BLOCK_SIZE * 1.5);
 }
 
@@ -334,7 +358,14 @@ SShape::~SShape()
 
 void SShape::changeRotation()
 {
-	this->setRotation(this->rotation() + 90);
+	if ( 0 == (static_cast<int>(this->rotation()) % 180) )
+	{
+		this->setRotation(this->rotation() + 90);
+	}
+	else
+	{
+		this->setRotation(0);
+	}
 }
 
 void SShape::randomRotation()
@@ -348,10 +379,11 @@ ZShape::ZShape()
 {
 	m_eShapeType = ZSHAPE;
 	this->initShapeBlock(4, ZSHAPE);
-	m_qBaseShape.at(0)->setPos(0 * BLOCK_SIZE, 0 * BLOCK_SIZE);
-	m_qBaseShape.at(1)->setPos(1 * BLOCK_SIZE, 0 * BLOCK_SIZE);
-	m_qBaseShape.at(2)->setPos(1 * BLOCK_SIZE, 1 * BLOCK_SIZE);
-	m_qBaseShape.at(3)->setPos(2 * BLOCK_SIZE, 1 * BLOCK_SIZE);
+	QList<QGraphicsItem *> tmp_lstItems = this->childItems();
+	tmp_lstItems.at(0)->setPos(0 * BLOCK_SIZE, 0 * BLOCK_SIZE);
+	tmp_lstItems.at(1)->setPos(1 * BLOCK_SIZE, 0 * BLOCK_SIZE);
+	tmp_lstItems.at(2)->setPos(1 * BLOCK_SIZE, 1 * BLOCK_SIZE);
+	tmp_lstItems.at(3)->setPos(2 * BLOCK_SIZE, 1 * BLOCK_SIZE);
 	this->setTransformOriginPoint(BLOCK_SIZE * 1.5, BLOCK_SIZE * 1.5);
 }
 
@@ -362,7 +394,14 @@ ZShape::~ZShape()
 
 void ZShape::changeRotation()
 {
-	this->setRotation(this->rotation() + 90);
+	if ( 0 == (static_cast<int>(this->rotation()) % 180) )
+	{
+		this->setRotation(this->rotation() + 90);
+	}
+	else
+	{
+		this->setRotation(0);
+	}
 }
 
 void ZShape::randomRotation()
