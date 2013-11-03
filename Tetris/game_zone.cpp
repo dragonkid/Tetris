@@ -167,13 +167,7 @@ void GameZone::clearFullRows(const qreal in_fStart, const qreal in_fEnd)
 	{
 		tmp_qScanRect.setY(y - 0.5);
 		tmp_qScanRect.setHeight(BLOCK_SIZE + 1);
-		QList<QGraphicsItem *> tmp_lstItems = m_pScene->items(tmp_qScanRect, Qt::ContainsItemShape);
-		// debug
-		g_Debug << "Rect.x = " << tmp_qScanRect.x()
-				<< "Rect.y = " << tmp_qScanRect.y()
-				<< "Rect.width = " << tmp_qScanRect.width()
-				<< "Rect.height = " << tmp_qScanRect.height()
-				<< "Items num in zone:" << tmp_lstItems.count() << "\n";
+		ItemList tmp_lstItems = m_pScene->items(tmp_qScanRect, Qt::ContainsItemShape);
 		if ( XNUM == tmp_lstItems.count() )	// Full row.
 		{
 			foreach(QGraphicsItem *item, tmp_lstItems) 
@@ -199,11 +193,9 @@ void GameZone::moveClearedRowsDown( const FullRow_Vec & in_vecFulls )
 	for ( FullRow_Vec::size_type i = 0; i < in_vecFulls.size(); ++i )
 	{
 		tmp_qMoveRect.setHeight(in_vecFulls[i] + 1);
-		QList<QGraphicsItem *> tmp_lstItems = m_pScene->items(tmp_qMoveRect, Qt::ContainsItemShape);
+		ItemList tmp_lstItems = m_pScene->items(tmp_qMoveRect, Qt::ContainsItemShape);
 		foreach(QGraphicsItem * item, tmp_lstItems)
 		{
-			// debug
-			g_Debug << "x:" << item->x() << "y:" << item->y() << "\n";
 			item->moveBy(0, BLOCK_SIZE);
 		}
 	}

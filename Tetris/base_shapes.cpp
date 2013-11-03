@@ -14,7 +14,7 @@ BaseShape::BaseShape()
 	m_pQTimer = new QTimer(this);
 	connect(m_pQTimer, SIGNAL(timeout()), this, SLOT(moveDown()));
 	m_pQTimer->start(m_iDownSpeed);
-	// Random seed.
+	// Set random seed.
 	srand(time(NULL));
 }
 
@@ -28,7 +28,7 @@ const ShapeType BaseShape::getShapeType() const
 	return m_eShapeType;
 }
 
-void BaseShape::initShapeBlock( unsigned int num, ShapeType shapeType )
+ItemList BaseShape::initShapeBlock( unsigned int num, ShapeType shapeType )
 {
 	for (unsigned int i = 0; i < num; ++i)
 	{
@@ -38,13 +38,14 @@ void BaseShape::initShapeBlock( unsigned int num, ShapeType shapeType )
 			this->addToGroup(tmp_pOneBlock);
 		}
 	}
+	return this->childItems();
 }
 
 void BaseShape::destroyShapeBlock()
 {
 	// Memory of OneBlocks in ShapeBlock managed by QGraphicsScene.
-	QList<QGraphicsItem *> tmp_lstItems = this->childItems();
- 	for (QList<QGraphicsItem *>::size_type i = 0; i < tmp_lstItems.count(); ++i)
+	ItemList tmp_lstItems = this->childItems();
+ 	for (ItemList::size_type i = 0; i < tmp_lstItems.count(); ++i)
  	{
  		if ( NULL != tmp_lstItems[i] )
  		{
@@ -67,15 +68,12 @@ void BaseShape::moveDown()
 
 bool BaseShape::isColliding() const
 {	
-	QList<QGraphicsItem *> tmp_lstItems = this->childItems();	
-	QGraphicsItem * tmp_pItem = NULL;
-	foreach(tmp_pItem, tmp_lstItems)
+	ItemList tmp_lstItems = this->childItems();	
+	foreach(QGraphicsItem * tmp_pItem, tmp_lstItems)
 	{
 		if ( tmp_pItem->collidingItems().count() != 0 )
 		{
-			QList<QGraphicsItem *> tmp = tmp_pItem->collidingItems();
-			// debug
-			g_Debug << "Colliding items:" << tmp_pItem->collidingItems().count() << "\n";
+			ItemList tmp = tmp_pItem->collidingItems();
 			return true;
 		}
 	}
@@ -157,8 +155,7 @@ QRectF BaseShape::boundingRect() const
 IShape::IShape()
 {
 	m_eShapeType = ISHAPE;
-	this->initShapeBlock(4, ISHAPE);
-	QList<QGraphicsItem *> tmp_lstItems = this->childItems();
+	ItemList tmp_lstItems = this->initShapeBlock(4, ISHAPE);
 	tmp_lstItems.at(0)->setPos(0 * BLOCK_SIZE, 0 * BLOCK_SIZE);
 	tmp_lstItems.at(1)->setPos(1 * BLOCK_SIZE, 0 * BLOCK_SIZE);
 	tmp_lstItems.at(2)->setPos(2 * BLOCK_SIZE, 0 * BLOCK_SIZE);
@@ -193,8 +190,7 @@ void IShape::randomRotation()
 JShape::JShape()
 {
 	m_eShapeType = JSHAPE;
-	this->initShapeBlock(4, JSHAPE);
-	QList<QGraphicsItem *> tmp_lstItems = this->childItems();
+	ItemList tmp_lstItems = this->initShapeBlock(4, JSHAPE);
 	tmp_lstItems.at(0)->setPos(0 * BLOCK_SIZE, 0 * BLOCK_SIZE);
 	tmp_lstItems.at(1)->setPos(0 * BLOCK_SIZE, 1 * BLOCK_SIZE);
 	tmp_lstItems.at(2)->setPos(0 * BLOCK_SIZE, 2 * BLOCK_SIZE);
@@ -225,7 +221,6 @@ void JShape::randomRotation()
 	this->setRotation(tmp_randRotation);
 	if ( 270 == (int)tmp_randRotation )
 	{
-		//this->setY(-BLOCK_SIZE);
 		this->moveBy(0, -BLOCK_SIZE);
 	}
 }
@@ -234,8 +229,7 @@ void JShape::randomRotation()
 LShape::LShape()
 {
 	m_eShapeType = LSHAPE;
-	this->initShapeBlock(4, LSHAPE);
-	QList<QGraphicsItem *> tmp_lstItems = this->childItems();
+	ItemList tmp_lstItems = this->initShapeBlock(4, LSHAPE);
 	tmp_lstItems.at(0)->setPos(0 * BLOCK_SIZE, 0 * BLOCK_SIZE);
 	tmp_lstItems.at(1)->setPos(0 * BLOCK_SIZE, 1 * BLOCK_SIZE);
 	tmp_lstItems.at(2)->setPos(0 * BLOCK_SIZE, 2 * BLOCK_SIZE);
@@ -274,8 +268,7 @@ void LShape::randomRotation()
 TShape::TShape()
 {
 	m_eShapeType = TSHAPE;
-	this->initShapeBlock(4, TSHAPE);
-	QList<QGraphicsItem *> tmp_lstItems = this->childItems();
+	ItemList tmp_lstItems = this->initShapeBlock(4, TSHAPE);
 	tmp_lstItems.at(0)->setPos(1 * BLOCK_SIZE, 0 * BLOCK_SIZE);
 	tmp_lstItems.at(1)->setPos(0 * BLOCK_SIZE, 1 * BLOCK_SIZE);
 	tmp_lstItems.at(2)->setPos(1 * BLOCK_SIZE, 1 * BLOCK_SIZE);
@@ -306,7 +299,6 @@ void TShape::randomRotation()
 	this->setRotation(tmp_randRotation);
 	if ( 180 == (int)tmp_randRotation )
 	{
-		//this->setY(-BLOCK_SIZE);
 		this->moveBy(0, -BLOCK_SIZE);
 	}
 }
@@ -315,8 +307,7 @@ void TShape::randomRotation()
 OShape::OShape()
 {
 	m_eShapeType = OSHAPE;
-	this->initShapeBlock(4, OSHAPE);
-	QList<QGraphicsItem *> tmp_lstItems = this->childItems();
+	ItemList tmp_lstItems = this->initShapeBlock(4, OSHAPE);
 	tmp_lstItems.at(0)->setPos(0 * BLOCK_SIZE, 0 * BLOCK_SIZE);
 	tmp_lstItems.at(1)->setPos(0 * BLOCK_SIZE, 1 * BLOCK_SIZE);
 	tmp_lstItems.at(2)->setPos(1 * BLOCK_SIZE, 0 * BLOCK_SIZE);
@@ -342,8 +333,7 @@ void OShape::randomRotation()
 SShape::SShape()
 {
 	m_eShapeType = SSHAPE;
-	this->initShapeBlock(4, SSHAPE);
-	QList<QGraphicsItem *> tmp_lstItems = this->childItems();
+	ItemList tmp_lstItems = this->initShapeBlock(4, SSHAPE);
 	tmp_lstItems.at(0)->setPos(0 * BLOCK_SIZE, 1 * BLOCK_SIZE);
 	tmp_lstItems.at(1)->setPos(1 * BLOCK_SIZE, 1 * BLOCK_SIZE);
 	tmp_lstItems.at(2)->setPos(1 * BLOCK_SIZE, 0 * BLOCK_SIZE);
@@ -378,8 +368,7 @@ void SShape::randomRotation()
 ZShape::ZShape()
 {
 	m_eShapeType = ZSHAPE;
-	this->initShapeBlock(4, ZSHAPE);
-	QList<QGraphicsItem *> tmp_lstItems = this->childItems();
+	ItemList tmp_lstItems = this->initShapeBlock(4, ZSHAPE);
 	tmp_lstItems.at(0)->setPos(0 * BLOCK_SIZE, 0 * BLOCK_SIZE);
 	tmp_lstItems.at(1)->setPos(1 * BLOCK_SIZE, 0 * BLOCK_SIZE);
 	tmp_lstItems.at(2)->setPos(1 * BLOCK_SIZE, 1 * BLOCK_SIZE);

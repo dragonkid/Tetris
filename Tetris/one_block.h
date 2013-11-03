@@ -16,8 +16,6 @@ const int BLOCK_ALPHA = 255;
 const int BLOCK_SIZE = 20;
 const QColor BLOCK_PEN(255, 255, 255, 255);
 
-
-
 class OneBlock : public QGraphicsRectItem, public QObject
 {
 public:

@@ -5,6 +5,9 @@
 #include <QGraphicsItemGroup>
 #include <QList>
 #include <QTimer>
+#include <QGraphicsItem>
+
+typedef QList<QGraphicsItem *> ItemList;
 
 enum ShapeType
 {
@@ -48,10 +51,9 @@ public:
 	virtual QRectF boundingRect() const;
 protected:
 	ShapeType			m_eShapeType;
-	//QList<OneBlock *>	m_qBaseShape;
 	QTransform			m_qOldTransform;
 
-	void initShapeBlock(unsigned int num, ShapeType shapeType);
+	ItemList initShapeBlock(unsigned int num, ShapeType shapeType);
 	void destroyShapeBlock();
 private:
 	QTimer *			m_pQTimer;
