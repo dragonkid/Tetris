@@ -45,6 +45,7 @@ public:
 	void stopTimer();
 	qreal getShapeWidth();
 	qreal getShapeHeight();
+	virtual QRectF boundingRect() const;
 protected:
 	ShapeType			m_eShapeType;
 	QList<OneBlock *>	m_qBaseShape;

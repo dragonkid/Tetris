@@ -150,6 +150,11 @@ void BaseShape::clearBoxGroup()
 	}
 }
 
+QRectF BaseShape::boundingRect() const
+{
+	return QRectF(0,0,0,0);
+}
+
 // IShape
 IShape::IShape()
 {
