@@ -50,15 +50,14 @@ public:
 	virtual QRectF boundingRect() const;
 protected:
 	ShapeType			m_eShapeType;
-	QTransform			m_qOldTransform;
 
-	ItemList initShapeBlock(unsigned int num, ShapeType shapeType);
-	void destroyShapeBlock();
+	void initShapeBlock(unsigned int num, ShapeType shapeType);
 private:
-	QTimer *			m_pQTimer;
 	int					m_iDownSpeed;
 	bool				m_bIsFixed;
+	QTimer *			m_pQTimer;
 
+	void destroyShapeBlock();
 	void clearBoxGroup();
 public slots:
 	void moveDown();

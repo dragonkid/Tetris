@@ -26,9 +26,7 @@ GameZone::GameZone(QWidget * parent)
 	this->setMaximumSize(m_fZoneWidth, m_fZoneHeight);
 
 	m_pScene = new QGraphicsScene(this);
-	// Set rect of GraphicsScene.
 	m_pScene->setSceneRect(0, 0, m_fSceneWidth, m_fSceneHeight);
-	// Set background of GraphicsScene.
 	m_pScene->setBackgroundBrush(m_qBackgroundColor);
 	this->setScene(m_pScene);
 
@@ -161,7 +159,7 @@ void GameZone::clearFullRows(const qreal in_fStart, const qreal in_fEnd)
 {
 	FullRow_Vec tmp_vecFullRow;
 	tmp_vecFullRow.clear();
-
+	// ItemSelectionMode is ContainsItemShape. So offset of 0.5 is needed.
 	QRectF tmp_qScanRect(-0.5, 0, m_fSceneWidth + 1, BLOCK_SIZE + 1);
 	for (qreal y = in_fStart; y < in_fEnd; y += BLOCK_SIZE)
 	{
@@ -191,10 +189,11 @@ void GameZone::clearFullRows(const qreal in_fStart, const qreal in_fEnd)
 
 void GameZone::moveClearedRowsDown( const FullRow_Vec & in_vecFulls )
 {
+	// ItemSelectionMode is ContainsItemShape. So offset of 0.5 is needed.
 	QRectF tmp_qMoveRect(-0.5, 0, m_fSceneWidth + 1, 0);
 	for ( FullRow_Vec::size_type i = 0; i < in_vecFulls.size(); ++i )
 	{
-		tmp_qMoveRect.setHeight(in_vecFulls[i] + 1);
+		tmp_qMoveRect.setHeight(in_vecFulls[i] + 0.5);
 		ItemList tmp_lstItems = m_pScene->items(tmp_qMoveRect, Qt::ContainsItemShape);
 		foreach(QGraphicsItem * item, tmp_lstItems)
 		{
