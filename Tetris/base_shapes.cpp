@@ -61,7 +61,7 @@ void BaseShape::moveDown()
 	this->moveBy(0, BLOCK_SIZE);
 	if ( this->isColliding() )
 	{
-		m_pQTimer->stop();
+		this->moveBy(0, -BLOCK_SIZE);
 		this->setFixed();
 	}
 }
@@ -87,8 +87,9 @@ bool BaseShape::isFixed() const
 
 void BaseShape::setFixed()
 {
+	m_pQTimer->stop();
 	m_bIsFixed = true;
-	this->moveBy(0, -BLOCK_SIZE);
+	// The base pos(0, 0) will changed when shape rotates.
 	qreal tmp_fScanStart = this->sceneBoundingRect().y();
 	qreal tmp_fScanEnd = this->sceneBoundingRect().y() + this->getShapeHeight();
 	if ( (180 == this->rotation()) || (270 == this->rotation()) )
@@ -100,19 +101,15 @@ void BaseShape::setFixed()
 	emit clearFullRows(tmp_fScanStart, tmp_fScanEnd);
 }
 
-void BaseShape::restartTimer()
+void BaseShape::resetTimer()
 {
 	m_pQTimer->start(m_iDownSpeed);
-}
-
-void BaseShape::stopTimer()
-{
-	m_pQTimer->stop();
 }
 
 const qreal BaseShape::getShapeWidth() const
 {
 	qreal width = 0;
+	// The real height and width will change when it rotates.
 	if ( 0 == (static_cast<int>(this->rotation()) % 180) )
 	{
 		width = this->childrenBoundingRect().width();
@@ -127,6 +124,7 @@ const qreal BaseShape::getShapeWidth() const
 const qreal BaseShape::getShapeHeight() const
 {
 	qreal height = 0;
+	// The real height and width will change when it rotates.
 	if ( 0 == (static_cast<int>(this->rotation()) % 180) )
 	{
 		height = this->childrenBoundingRect().height();

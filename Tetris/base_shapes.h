@@ -39,15 +39,14 @@ public:
 	virtual ~BaseShape() = 0;
 
 	const ShapeType getShapeType() const;
-	virtual void changeRotation() = 0;
-	bool isColliding() const;
-	bool isFixed() const;
-	void setFixed();
-	virtual void randomRotation() = 0;
-	void restartTimer();
-	void stopTimer();
 	const qreal getShapeWidth() const;
 	const qreal getShapeHeight() const;
+	void setFixed();
+	void resetTimer();	// Open for better user experience.
+	bool isColliding() const;
+	bool isFixed() const;
+	virtual void randomRotation() = 0;	// Unused now.
+	virtual void changeRotation() = 0;
 	virtual QRectF boundingRect() const;
 protected:
 	ShapeType			m_eShapeType;

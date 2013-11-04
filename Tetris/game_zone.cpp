@@ -58,10 +58,10 @@ void GameZone::keyPressEvent(QKeyEvent *event)
 	{
 	case Qt::Key_Down:
 		m_pShape->moveBy(0, BLOCK_SIZE);
-		m_pShape->restartTimer();
+		m_pShape->resetTimer();	// For better user experience.
 		if ( m_pShape->isColliding() )
 		{
-			m_pShape->stopTimer();
+			m_pShape->moveBy(0, -BLOCK_SIZE);
 			m_pShape->setFixed();
 		}
 		break;
@@ -87,10 +87,10 @@ void GameZone::keyPressEvent(QKeyEvent *event)
 			m_pShape->moveBy(-BLOCK_SIZE, 0);
 		}
 		break;
-	case Qt::Key_Space:
+	case Qt::Key_S:
 		this->stopGame();
 		break;
-	case Qt::Key_V:
+	case Qt::Key_C:
 		this->continueGame();
 		break;
 	default:
@@ -205,13 +205,11 @@ void GameZone::stopGame()
 {
 	// debug
 	g_pLogfile->close();
-	m_pShape->stopTimer();
-	//m_pShape->setMoveable(false);
+	// Todo: Set block fixed. 
 }
 
 void GameZone::continueGame()
 {
 	g_pLogfile->open(QIODevice::Append | QIODevice::Text);
-	m_pShape->restartTimer();
-	//m_pShape->setMoveable(true);
+	// Todo: Set block moveable.
 }
