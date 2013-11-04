@@ -166,14 +166,16 @@ void GameZone::clearFullRows(const qreal in_fStart, const qreal in_fEnd)
 	for (qreal y = in_fStart; y < in_fEnd; y += BLOCK_SIZE)
 	{
 		tmp_qScanRect.setY(y - 0.5);
-		tmp_qScanRect.setHeight(BLOCK_SIZE + 1);
+		// Function setY may change the height. So reset it.
+		tmp_qScanRect.setHeight(BLOCK_SIZE + 1);	
 		ItemList tmp_lstItems = m_pScene->items(tmp_qScanRect, Qt::ContainsItemShape);
 		if ( XNUM == tmp_lstItems.count() )	// Full row.
 		{
 			foreach(QGraphicsItem *item, tmp_lstItems) 
 			{
-				QGraphicsBlurEffect *blur_effect = new QGraphicsBlurEffect;
-				item->setGraphicsEffect(blur_effect);
+				// Todo: Animation effects for clear full rows.
+				//QGraphicsBlurEffect *blur_effect = new QGraphicsBlurEffect;
+				//item->setGraphicsEffect(blur_effect);
 				delete item;
 			}
 			tmp_vecFullRow.push_back(y);

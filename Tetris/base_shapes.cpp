@@ -91,11 +91,12 @@ void BaseShape::setFixed()
 	m_bIsFixed = true;
 	// The base pos(0, 0) will changed when shape rotates.
 	qreal tmp_fScanStart = this->sceneBoundingRect().y();
-	qreal tmp_fScanEnd = this->sceneBoundingRect().y() + this->getShapeHeight();
+	// Plus 1 for correction of penWidth.
+	qreal tmp_fScanEnd = this->sceneBoundingRect().y() + this->getShapeHeight() + 1;
 	if ( (180 == this->rotation()) || (270 == this->rotation()) )
 	{
-		tmp_fScanStart -= (this->getShapeHeight() + 1);
-		tmp_fScanEnd = this->sceneBoundingRect().y() - 1;
+		tmp_fScanStart -= this->getShapeHeight();
+		tmp_fScanEnd = this->sceneBoundingRect().y();
 	}
 	this->clearBoxGroup();
 	emit clearFullRows(tmp_fScanStart, tmp_fScanEnd);
