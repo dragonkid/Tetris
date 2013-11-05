@@ -42,6 +42,7 @@ public:
 	const qreal getShapeWidth() const;
 	const qreal getShapeHeight() const;
 	void setFixed();
+	void setMoveable(bool);
 	void resetTimer();	// Open for better user experience.
 	bool isColliding() const;
 	bool isFixed() const;

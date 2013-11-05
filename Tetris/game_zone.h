@@ -38,6 +38,11 @@ private:
 
 	void setShapeInitPos();
 	void moveClearedRowsDown(const FullRow_Vec &);
+	// Game control.
+	void shapeDown();
+	void shapeLeft();
+	void shapeRight();
+	void shapeRotation();
 	void stopGame();
 	void continueGame();
 public slots:

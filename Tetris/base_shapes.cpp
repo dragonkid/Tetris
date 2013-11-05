@@ -202,6 +202,20 @@ QRectF BaseShape::boundingRect() const
 	return QRectF(0, 0, 0, 0);
 }
 
+void BaseShape::setMoveable( bool in_bMoveable )
+{
+	if (in_bMoveable)
+	{
+		m_bIsFixed = false;
+		m_pQTimer->start(m_iDownSpeed);
+	} 
+	else
+	{
+		m_bIsFixed = true;
+		m_pQTimer->stop();
+	}
+}
+
 // IShape
 IShape::IShape()
 {

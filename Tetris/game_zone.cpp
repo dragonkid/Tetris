@@ -48,42 +48,19 @@ void GameZone::gameStart()
 
 void GameZone::keyPressEvent(QKeyEvent *event)
 {
-	if ( m_pShape->isFixed() )
-	{
-		return ;
-	}
 	switch (event->key())
 	{
 	case Qt::Key_Down:
-		m_pShape->moveBy(0, BLOCK_SIZE);
-		m_pShape->resetTimer();	// For better user experience.
-		if ( m_pShape->isColliding() )
-		{
-			m_pShape->moveBy(0, -BLOCK_SIZE);
-			m_pShape->setFixed();
-		}
-		break;
-	case Qt::Key_Up:
-		m_fOldRotation = m_pShape->rotation();
-		m_pShape->changeRotation();
-		if ( m_pShape->isColliding() )
-		{
-			m_pShape->setRotation(m_fOldRotation);
-		}
+		this->shapeDown();
 		break;
 	case Qt::Key_Left:
-		m_pShape->moveBy(-BLOCK_SIZE, 0);
-		if ( m_pShape->isColliding() )
-		{
-			m_pShape->moveBy(BLOCK_SIZE, 0);
-		}
+		this->shapeLeft();
 		break;
 	case Qt::Key_Right:
-		m_pShape->moveBy(BLOCK_SIZE, 0);
-		if ( m_pShape->isColliding() )
-		{
-			m_pShape->moveBy(-BLOCK_SIZE, 0);
-		}
+		this->shapeRight();
+		break;
+	case Qt::Key_Up:
+		this->shapeRotation();
 		break;
 	case Qt::Key_S:
 		this->stopGame();
@@ -206,11 +183,67 @@ void GameZone::stopGame()
 {
 	// debug
 	g_pLogfile->close();
-	// Todo: Set block fixed. 
+	m_pShape->setMoveable(false);
 }
 
 void GameZone::continueGame()
 {
+	// debug
 	g_pLogfile->open(QIODevice::Append | QIODevice::Text);
-	// Todo: Set block moveable.
+	m_pShape->setMoveable(true);
+}
+
+void GameZone::shapeDown()
+{
+	if ( m_pShape->isFixed() )
+	{
+		return ;
+	}
+	m_pShape->moveBy(0, BLOCK_SIZE);
+	m_pShape->resetTimer();	// For better user experience.
+	if ( m_pShape->isColliding() )
+	{
+		m_pShape->moveBy(0, -BLOCK_SIZE);
+		m_pShape->setFixed();
+	}
+}
+
+void GameZone::shapeLeft()
+{
+	if ( m_pShape->isFixed() )
+	{
+		return ;
+	}
+	m_pShape->moveBy(-BLOCK_SIZE, 0);
+	if ( m_pShape->isColliding() )
+	{
+		m_pShape->moveBy(BLOCK_SIZE, 0);
+	}
+}
+
+void GameZone::shapeRight()
+{
+	if ( m_pShape->isFixed() )
+	{
+		return ;
+	}
+	m_pShape->moveBy(BLOCK_SIZE, 0);
+	if ( m_pShape->isColliding() )
+	{
+		m_pShape->moveBy(-BLOCK_SIZE, 0);
+	}
+}
+
+void GameZone::shapeRotation()
+{
+	if ( m_pShape->isFixed() )
+	{
+		return ;
+	}
+	m_fOldRotation = m_pShape->rotation();
+	m_pShape->changeRotation();
+	if ( m_pShape->isColliding() )
+	{
+		m_pShape->setRotation(m_fOldRotation);
+	}
 }
