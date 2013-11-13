@@ -45,7 +45,7 @@ private:
 	void shapeRotation();
 	void stopGame();
 	void continueGame();
-public slots:
+private slots:
 	void createNewShape();
 	void clearFullRows(const qreal, const qreal);
 signals:

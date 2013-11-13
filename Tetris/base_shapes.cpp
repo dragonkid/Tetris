@@ -9,12 +9,12 @@
 BaseShape::BaseShape() 
 	: m_eShapeType(END), m_iDownSpeed(500), m_bIsFixed(false)
 {
-	// Set and initialize timer.
+	// Set and initialize timer. Shape has property of move down naturally.
 	m_pQTimer = new QTimer(this);
 	connect(m_pQTimer, SIGNAL(timeout()), this, SLOT(moveDown()));
 	m_pQTimer->start(m_iDownSpeed);
 	// Set random seed.
-	srand(time(NULL));
+	//srand(time(NULL));
 }
 
 BaseShape::~BaseShape()

@@ -28,6 +28,8 @@ private:
 	const QRectF	m_qRectF;
 	const QPen		m_qPen;
 	QBrush			m_qBrush;
+
+	OneBlock();
 };
 
 #endif
