@@ -6,8 +6,13 @@
 #include <QGraphicsScene>
 #include <QKeyEvent>
 #include <QGraphicsLineItem>
-#include <QTransform>
 #include <vector>
+
+typedef enum
+{
+	SELF,
+	OPPOSITE
+} ZoneMode;
 
 typedef std::vector<qreal> FullRow_Vec;
 
@@ -15,12 +20,14 @@ class GameZone : public QGraphicsView
 {
 	Q_OBJECT
 public:
-	GameZone(QWidget * parent = 0);
+	GameZone(ZoneMode mode = SELF, QWidget * parent = 0);
 	~GameZone();
 
 	void gameStart();
 	const qreal getWidth() const;
 	const qreal getHeight() const;
+	const unsigned int getRandomSeed() const;
+	void setRandomSeed(const unsigned int);
 protected:
 	virtual void keyPressEvent(QKeyEvent *event);
 private:
@@ -35,6 +42,7 @@ private:
 	QGraphicsLineItem * m_pLeftLine;
 	QGraphicsLineItem * m_pRightLine;
 	qreal				m_fOldRotation;
+	unsigned int		m_uiSeed;
 
 	void setShapeInitPos();
 	void moveClearedRowsDown(const FullRow_Vec &);
@@ -42,7 +50,7 @@ private:
 	void shapeDown();
 	void shapeLeft();
 	void shapeRight();
-	void shapeRotation();
+	void shapeRotate();
 	void stopGame();
 	void continueGame();
 private slots:

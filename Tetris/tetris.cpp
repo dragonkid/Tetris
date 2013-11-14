@@ -5,8 +5,7 @@ Tetris::Tetris(QWidget *parent)
 {
 	ui.setupUi(this);
 
-	m_pGameZone = new GameZone(this);
-	m_pGameZone->show();
+	m_pGameZone = new GameZone(SELF, this);
 	m_pGameZone->gameStart();
 
 	this->setMinimumWidth(m_pGameZone->width());

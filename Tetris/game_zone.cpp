@@ -4,17 +4,19 @@
 #include <QPropertyAnimation>
 #include <QGraphicsBlurEffect>
 #include <QGraphicsOpacityEffect>
+#include <QMessageBox>
 
 static const qreal SCENE_OFFSET = 2;
 static const qreal XNUM = 16;
 static const qreal YNUM = 26;
 
-GameZone::GameZone(QWidget * parent)
+GameZone::GameZone(ZoneMode mode, QWidget * parent)
 	: m_fSceneWidth(XNUM * BLOCK_SIZE), 
 	  m_fSceneHeight(YNUM * BLOCK_SIZE),
 	  m_fZoneWidth(m_fSceneWidth + 2 * SCENE_OFFSET),
 	  m_fZoneHeight(m_fSceneHeight + SCENE_OFFSET),
-	  m_qBackgroundColor(Qt::lightGray)
+	  m_qBackgroundColor(Qt::lightGray),
+	  m_uiSeed(time(NULL))
 {
 	this->setParent(parent);
 	// Indicates that the engine should antialias edges of primitives if possible.
@@ -32,7 +34,7 @@ GameZone::GameZone(QWidget * parent)
 
 	m_pBottomLine = m_pScene->addLine(0, m_fZoneHeight, m_fZoneWidth, m_fZoneHeight, m_qBackgroundColor);
 	m_pLeftLine = m_pScene->addLine(-SCENE_OFFSET, 0, -SCENE_OFFSET, m_fZoneHeight, m_qBackgroundColor);
-	m_pRightLine = m_pScene->addLine(m_fZoneWidth, 0, m_fZoneWidth, m_fZoneHeight, m_qBackgroundColor);
+	m_pRightLine = m_pScene->addLine(m_fZoneWidth, 0, m_fZoneWidth, m_fZoneHeight, m_qBackgroundColor); 
 }
 
 GameZone::~GameZone()
@@ -43,6 +45,7 @@ GameZone::~GameZone()
 
 void GameZone::gameStart()
 {	
+	srand(m_uiSeed);
 	this->createNewShape();
 }
 
@@ -60,7 +63,7 @@ void GameZone::keyPressEvent(QKeyEvent *event)
 		this->shapeRight();
 		break;
 	case Qt::Key_Up:
-		this->shapeRotation();
+		this->shapeRotate();
 		break;
 	case Qt::Key_S:
 		this->stopGame();
@@ -92,7 +95,6 @@ void GameZone::setShapeInitPos()
 
 void GameZone::createNewShape()
 {
-	srand(time(NULL));
 	int tmp_iRandShapeType = rand() % END;
 	switch (tmp_iRandShapeType)
 	{
@@ -234,7 +236,7 @@ void GameZone::shapeRight()
 	}
 }
 
-void GameZone::shapeRotation()
+void GameZone::shapeRotate()
 {
 	if ( m_pShape->isFixed() )
 	{
@@ -246,4 +248,14 @@ void GameZone::shapeRotation()
 	{
 		m_pShape->setRotation(m_fOldRotation);
 	}
+}
+
+const unsigned int GameZone::getRandomSeed() const
+{
+	return m_uiSeed;
+}
+
+void GameZone::setRandomSeed( const unsigned int seed )
+{
+	m_uiSeed = seed;
 }
