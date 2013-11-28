@@ -16,7 +16,8 @@ GameZone::GameZone(ZoneMode mode, QWidget * parent)
 	  m_fZoneWidth(m_fSceneWidth + 2 * SCENE_OFFSET),
 	  m_fZoneHeight(m_fSceneHeight + SCENE_OFFSET),
 	  m_qBackgroundColor(Qt::lightGray),
-	  m_uiSeed(time(NULL))
+	  m_iSeed(time(NULL)),
+	  m_eZoneMode(mode)
 {
 	this->setParent(parent);
 	// Indicates that the engine should antialias edges of primitives if possible.
@@ -45,35 +46,14 @@ GameZone::~GameZone()
 
 void GameZone::gameStart()
 {	
-	srand(m_uiSeed);
+	srand(m_iSeed);
 	this->createNewShape();
 }
 
 void GameZone::keyPressEvent(QKeyEvent *event)
 {
-	switch (event->key())
-	{
-	case Qt::Key_Down:
-		this->shapeDown();
-		break;
-	case Qt::Key_Left:
-		this->shapeLeft();
-		break;
-	case Qt::Key_Right:
-		this->shapeRight();
-		break;
-	case Qt::Key_Up:
-		this->shapeRotate();
-		break;
-	case Qt::Key_S:
-		this->stopGame();
-		break;
-	case Qt::Key_C:
-		this->continueGame();
-		break;
-	default:
-		break;
-	}
+	this->gameControl(event->key());
+	emit keyPressed(event->key());
 }
 
 const qreal GameZone::getWidth() const
@@ -250,12 +230,39 @@ void GameZone::shapeRotate()
 	}
 }
 
-const unsigned int GameZone::getRandomSeed() const
+const int GameZone::getRandomSeed() const
 {
-	return m_uiSeed;
+	return m_iSeed;
 }
 
-void GameZone::setRandomSeed( const unsigned int seed )
+void GameZone::setRandomSeed( int seed )
 {
-	m_uiSeed = seed;
+	m_iSeed = seed;
+}
+
+void GameZone::gameControl( int in_iKey )
+{
+	switch (in_iKey)
+	{
+	case Qt::Key_Down:
+		this->shapeDown();
+		break;
+	case Qt::Key_Left:
+		this->shapeLeft();
+		break;
+	case Qt::Key_Right:
+		this->shapeRight();
+		break;
+	case Qt::Key_Up:
+		this->shapeRotate();
+		break;
+	case Qt::Key_S:
+		this->stopGame();
+		break;
+	case Qt::Key_C:
+		this->continueGame();
+		break;
+	default:
+		break;
+	}
 }

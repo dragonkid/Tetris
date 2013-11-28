@@ -26,8 +26,8 @@ public:
 	void gameStart();
 	const qreal getWidth() const;
 	const qreal getHeight() const;
-	const unsigned int getRandomSeed() const;
-	void setRandomSeed(const unsigned int);
+	const int getRandomSeed() const;
+	void setRandomSeed(int);
 protected:
 	virtual void keyPressEvent(QKeyEvent *event);
 private:
@@ -42,7 +42,8 @@ private:
 	QGraphicsLineItem * m_pLeftLine;
 	QGraphicsLineItem * m_pRightLine;
 	qreal				m_fOldRotation;
-	unsigned int		m_uiSeed;
+	int					m_iSeed;
+	ZoneMode			m_eZoneMode;
 
 	void setShapeInitPos();
 	void moveClearedRowsDown(const FullRow_Vec &);
@@ -53,11 +54,14 @@ private:
 	void shapeRotate();
 	void stopGame();
 	void continueGame();
+public slots:
+	void gameControl(int);
+signals:
+	void gameFinished();
+	void keyPressed(int);
 private slots:
 	void createNewShape();
 	void clearFullRows(const qreal, const qreal);
-signals:
-	void gameFinished();
 };
 
 #endif
