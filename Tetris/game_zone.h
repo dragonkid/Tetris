@@ -8,19 +8,13 @@
 #include <QGraphicsLineItem>
 #include <vector>
 
-typedef enum
-{
-	SELF,
-	OPPOSITE
-} ZoneMode;
-
 typedef std::vector<qreal> FullRow_Vec;
 
 class GameZone : public QGraphicsView
 {
 	Q_OBJECT
 public:
-	GameZone(ZoneMode mode = SELF, QWidget * parent = 0);
+	GameZone(QWidget * parent = 0);
 	~GameZone();
 
 	void gameStart();
@@ -43,7 +37,6 @@ private:
 	QGraphicsLineItem * m_pRightLine;
 	qreal				m_fOldRotation;
 	int					m_iSeed;
-	ZoneMode			m_eZoneMode;
 
 	void setShapeInitPos();
 	void moveClearedRowsDown(const FullRow_Vec &);

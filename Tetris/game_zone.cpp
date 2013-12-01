@@ -10,14 +10,13 @@ static const qreal SCENE_OFFSET = 2;
 static const qreal XNUM = 16;
 static const qreal YNUM = 26;
 
-GameZone::GameZone(ZoneMode mode, QWidget * parent)
+GameZone::GameZone(QWidget * parent)
 	: m_fSceneWidth(XNUM * BLOCK_SIZE), 
 	  m_fSceneHeight(YNUM * BLOCK_SIZE),
 	  m_fZoneWidth(m_fSceneWidth + 2 * SCENE_OFFSET),
 	  m_fZoneHeight(m_fSceneHeight + SCENE_OFFSET),
 	  m_qBackgroundColor(Qt::lightGray),
-	  m_iSeed(time(NULL)),
-	  m_eZoneMode(mode)
+	  m_iSeed(time(NULL))
 {
 	this->setParent(parent);
 	// Indicates that the engine should antialias edges of primitives if possible.
@@ -163,15 +162,11 @@ void GameZone::moveClearedRowsDown( const FullRow_Vec & in_vecFulls )
 
 void GameZone::stopGame()
 {
-	// debug
-	g_pLogfile->close();
 	m_pShape->setMoveable(false);
 }
 
 void GameZone::continueGame()
 {
-	// debug
-	g_pLogfile->open(QIODevice::Append | QIODevice::Text);
 	m_pShape->setMoveable(true);
 }
 

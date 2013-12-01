@@ -6,11 +6,7 @@
 #include <QBrush>
 #include <QColor>
 #include <QPen>
-#include <QDebug>
 #include <QFile>
-
-extern QFile * g_pLogfile;
-extern QDebug g_Debug;
 
 const int BLOCK_ALPHA = 255;
 const int BLOCK_SIZE = 20;
