@@ -429,3 +429,35 @@ void ZShape::randomRotation()
 	qreal tmp_randRotation = 90 * (rand() % 2);
 	this->setRotation(tmp_randRotation);
 }
+
+BaseShape * ShapeFactory::createShape( int shapeType )
+{
+	BaseShape * tmp_pShape = NULL;
+	switch (shapeType)
+	{
+	case ISHAPE:
+		tmp_pShape = new IShape();
+		break;
+	case JSHAPE:
+		tmp_pShape = new JShape();
+		break;
+	case LSHAPE:
+		tmp_pShape = new LShape();
+		break;
+	case TSHAPE:
+		tmp_pShape = new TShape();
+		break;
+	case OSHAPE:
+		tmp_pShape = new OShape();
+		break;
+	case SSHAPE:
+		tmp_pShape = new SShape();
+		break;
+	case ZSHAPE:
+		tmp_pShape = new ZShape();
+		break;
+	default:
+		break;
+	}
+	return tmp_pShape;
+}

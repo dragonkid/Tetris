@@ -31,6 +31,17 @@ const QColor SHAPE_COLORS[7] = {
 	QColor(83, 153, 177, BLOCK_ALPHA)		// ZSHAPE
 };
 
+class BaseShape;
+
+class ShapeFactory
+{
+public:
+	static BaseShape * createShape(int);
+private:
+	ShapeFactory();
+	virtual ~ShapeFactory() = 0;
+};
+
 class BaseShape : public QObject, public QGraphicsItemGroup
 {
 	Q_OBJECT
