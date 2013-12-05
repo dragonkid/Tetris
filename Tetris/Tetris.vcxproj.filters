@@ -77,6 +77,12 @@
     <ClCompile Include="common.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_base_network.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_base_network.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="tetris.h">
@@ -94,15 +100,15 @@
     <CustomBuild Include="base_shapes.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
+    <CustomBuild Include="base_network.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GeneratedFiles\ui_tetris.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
     <ClInclude Include="one_block.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="base_network.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="common.h">

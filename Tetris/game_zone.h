@@ -7,6 +7,7 @@
 #include <QKeyEvent>
 #include <QGraphicsLineItem>
 #include <vector>
+#include <QByteArray>
 
 typedef std::vector<qreal> FullRow_Vec;
 
@@ -53,7 +54,7 @@ public slots:
 	void gameControl(int);
 signals:
 	void gameFinished();
-	void keyPressed(int);
+	void keyPressed(QByteArray);
 	void nextShapeIs(int);
 private slots:
 	void createNewShape();

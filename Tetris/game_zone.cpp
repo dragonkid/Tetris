@@ -54,7 +54,8 @@ void GameZone::gameStart()
 void GameZone::keyPressEvent(QKeyEvent *event)
 {
 	this->gameControl(event->key());
-	emit keyPressed(event->key());
+	// Todo: Refactor.
+	emit keyPressed(QByteArray::number(event->key()));
 }
 
 const qreal GameZone::getWidth() const

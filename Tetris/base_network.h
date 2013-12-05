@@ -4,11 +4,13 @@
 #include <QTcpServer>
 #include <QTcpSocket>
 #include <QObject>
+#include <QByteArray>
 
 const quint16 PORT = 6666;
 
 class BaseNetwork : public QObject
 {
+	Q_OBJECT
 public:
 	BaseNetwork();
 	~BaseNetwork();
@@ -16,12 +18,15 @@ public:
 	void initNetwork();
 	void uninitNetwork();
 	void newListen();
-	void newConnection(const QString ipAddr);
+	void createConnection(const QString ipAddr);
 public slots:
-	void showWarnInfo(QAbstractSocket::SocketError);
-	void sendData(int);
+	void sendData(const QByteArray &);
 	void recvData();
 	void acceptConnection();
+signals:
+	void errorOccur(QString);
+	void dataReceived(QByteArray);
+	void connEstablished();
 protected:
 private:
 	QTcpServer *	m_pTcpServer;
@@ -29,6 +34,8 @@ private:
 
 	BaseNetwork( const BaseNetwork & );
 	BaseNetwork & operator=(const BaseNetwork &);
+private slots:
+	void emitSocketError(QAbstractSocket::SocketError);
 };
 
 #endif	// _BASE_NETWORK_

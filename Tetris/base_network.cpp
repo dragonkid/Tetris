@@ -8,10 +8,10 @@ void BaseNetwork::initNetwork()
 	m_pTcpServer = new QTcpServer(this);
 	m_pTcpSocket = new QTcpSocket(this);
 	// Signal and slots.
+	bool tmp_bTest;
 	connect(m_pTcpSocket, SIGNAL(error(QAbstractSocket::SocketError)), 
-		this, SLOT(showWarnInfo(QAbstractSocket::SocketError)));
+		this, SLOT(emitSocketError(QAbstractSocket::SocketError)));
 	connect(m_pTcpSocket, SIGNAL(disconnected()), m_pTcpSocket, SLOT(deleteLater()));
-//	connect(m_pSelfGameZone, SIGNAL(keyPressed(int)), this, SLOT(sendData(int)));
 	connect(m_pTcpServer, SIGNAL(newConnection()), this, SLOT(acceptConnection()));
 }
 
@@ -33,14 +33,15 @@ void BaseNetwork::newListen()
 {
 	if ( false == m_pTcpServer->listen(QHostAddress::Any, PORT) )
 	{
-		Common::showWarnInfo(m_pTcpServer->errorString());
-		m_pTcpSocket->close();
+		// When debug, both run in one machine. So this line need to be annotated.
+		//m_pTcpSocket->close();
+		emit errorOccur(m_pTcpServer->errorString());
 		return ;
 	}
 }
 
 
-void BaseNetwork::newConnection( const QString ipAddr )
+void BaseNetwork::createConnection( const QString ipAddr )
 {
 	m_pTcpSocket->connectToHost(ipAddr, PORT);
 	connect(m_pTcpSocket, SIGNAL(readyRead()), this, SLOT(recvData()));
@@ -51,32 +52,52 @@ void BaseNetwork::newConnection( const QString ipAddr )
 void BaseNetwork::acceptConnection()
 {
 	m_pTcpSocket = m_pTcpServer->nextPendingConnection();
-	if ( NULL != m_pTcpServer )
+	if ( NULL != m_pTcpSocket )
 	{
 		connect(m_pTcpSocket, SIGNAL(disconnected()), m_pTcpSocket, SLOT(deleteLater()));
-		if ( m_pTcpSocket->waitForReadyRead() )
-		{
-//			m_pOppsiteGameZone->setRandomSeed(QString(m_pTcpSocket->readAll()).toInt());
-//			m_pOppsiteGameZone->gameStart();
-		}
+		//if ( m_pTcpSocket->waitForReadyRead() )
+		//{
+		//	m_pOppsiteGameZone->setRandomSeed(QString(m_pTcpSocket->readAll()).toInt());
+		//	m_pOppsiteGameZone->gameStart();
+		//}
 		connect(m_pTcpSocket, SIGNAL(readyRead()), this, SLOT(recvData()));
+		emit connEstablished();
 	}
 }
 
-void BaseNetwork::sendData( int data )
+//void basenetwork::senddata( int data )
+//{
+//	m_ptcpsocket->write(qbytearray::number(data));
+//}
+
+//void BaseNetwork::recvData()
+//{
+//	int tmp_iKeyPressed = QString(m_pTcpSocket->readAll()).toInt();
+////	m_pOppsiteGameZone->gameControl(tmp_iKeyPressed);
+//}
+
+void BaseNetwork::emitSocketError( QAbstractSocket::SocketError )
 {
-	m_pTcpSocket->write(QByteArray::number(data));
+	emit errorOccur(m_pTcpSocket->errorString());
+}
+
+void BaseNetwork::sendData( const QByteArray & data )
+{
+	m_pTcpSocket->write(data);
 }
 
 void BaseNetwork::recvData()
 {
-	int tmp_iKeyPressed = QString(m_pTcpSocket->readAll()).toInt();
-//	m_pOppsiteGameZone->gameControl(tmp_iKeyPressed);
+	QByteArray tmp_qData = m_pTcpSocket->readAll();
+	emit dataReceived(tmp_qData);
 }
 
-void BaseNetwork::showWarnInfo( QAbstractSocket::SocketError )
+BaseNetwork::BaseNetwork()
 {
-	QMessageBox msgBox;
-	msgBox.setText(m_pTcpSocket->errorString());
-	msgBox.exec();
+	this->initNetwork();
+}
+
+BaseNetwork::~BaseNetwork()
+{
+	this->uninitNetwork();
 }

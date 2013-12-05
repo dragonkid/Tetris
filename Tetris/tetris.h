@@ -8,6 +8,8 @@
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QLabel>
+#include <QPushButton>
+#include <QLineEdit>
 
 typedef enum
 {
@@ -36,15 +38,21 @@ private:
 	QGraphicsScene* m_pPreviewScene;
 	QHBoxLayout *	m_pHLayout;
 	QVBoxLayout *	m_pVLayout;
-	QLabel *		m_pLabel;
+	QLabel *		m_pLabelPreview;
+	QLabel *		m_pLabelIP;
+	QLineEdit *		m_pEditIP;
+	QPushButton *	m_pConnectButton;
 
 	Tetris( const Tetris & );
 	Tetris & operator=( const Tetris & );
 
 	void initTetris( PlayMode mode );
-	void initMiddleZone( /*PlayMode mode*/ );
+	void initMiddleZone( PlayMode mode );
 private slots:
 	void previewNextShape(int);
+	void establishConnection();
+	void connEstablished();
+	void showStatusMsg(QString);
 };
 
 #endif // TETRIS_H
