@@ -10,14 +10,15 @@ static const qreal SCENE_OFFSET = 2;
 static const qreal XNUM = 16;
 static const qreal YNUM = 26;
 
-GameZone::GameZone(QWidget * parent)
+GameZone::GameZone(QWidget * parent, ZoneOwner owner)
 	: SCENE_WIDTH(XNUM * BLOCK_SIZE), 
 	  SCENE_HEIGHT(YNUM * BLOCK_SIZE),
 	  ZONE_WIDTH(SCENE_WIDTH + SCENE_OFFSET),
 	  ZONE_HEIGHT(SCENE_HEIGHT + SCENE_OFFSET),
 	  BACKGROUND_COLOE(Qt::lightGray),
 	  m_iSeed(time(NULL)),
-	  m_iNextShape(~0)
+	  m_iNextShape(~0),
+	  m_eOwner(owner)
 {
 	this->setParent(parent);
 	// Indicates that the engine should antialias edges of primitives if possible.
@@ -93,7 +94,10 @@ void GameZone::createNewShape()
 		this, SLOT(clearFullRows(const qreal, const qreal)));
 	// Generate next shape type.
 	m_iNextShape = rand() % END;
-	emit nextShapeIs(m_iNextShape);
+	if ( SELF == m_eOwner )
+	{
+		emit nextShapeIs(m_iNextShape);
+	}
 }
 
 void GameZone::clearFullRows(const qreal in_fStart, const qreal in_fEnd)

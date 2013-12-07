@@ -13,8 +13,6 @@ BaseShape::BaseShape()
 	m_pQTimer = new QTimer(this);
 	connect(m_pQTimer, SIGNAL(timeout()), this, SLOT(moveDown()));
 	m_pQTimer->start(m_iDownSpeed);
-	// Set random seed.
-	//srand(time(NULL));
 }
 
 BaseShape::~BaseShape()
@@ -240,12 +238,6 @@ void IShape::changeRotation()
 	}
 }
 
-void IShape::randomRotation()
-{
-	qreal tmp_randRotation = 90 * (rand() % 2);
-	this->setRotation(tmp_randRotation);
-}
-
 // JShape
 JShape::JShape()
 {
@@ -267,16 +259,6 @@ void JShape::changeRotation()
 	else
 	{
 		this->setRotation(this->rotation() + 90);
-	}
-}
-
-void JShape::randomRotation()
-{
-	qreal tmp_randRotation = 90 * (rand() % 4);
-	this->setRotation(tmp_randRotation);
-	if ( 270 == (int)tmp_randRotation )
-	{
-		this->moveBy(0, -BLOCK_SIZE);
 	}
 }
 
@@ -304,16 +286,6 @@ void LShape::changeRotation()
 	}
 }
 
-void LShape::randomRotation()
-{
-	qreal tmp_randRotation = 90 * (rand() % 4);
-	this->setRotation(tmp_randRotation);
-	if ( 270 == (int)tmp_randRotation )
-	{
-		this->moveBy(0, -BLOCK_SIZE);
-	}
-}
-
 // TShape
 TShape::TShape()
 {
@@ -338,16 +310,6 @@ void TShape::changeRotation()
 	}
 }
 
-void TShape::randomRotation()
-{
-	qreal tmp_randRotation = 90 * (rand() % 4);
-	this->setRotation(tmp_randRotation);
-	if ( 180 == (int)tmp_randRotation )
-	{
-		this->moveBy(0, -BLOCK_SIZE);
-	}
-}
-
 // OShape
 OShape::OShape()
 {
@@ -361,11 +323,6 @@ OShape::~OShape()
 }
 // Rotation angle: needn't to rotate.
 void OShape::changeRotation()
-{
-
-}
-
-void OShape::randomRotation()
 {
 
 }
@@ -394,12 +351,6 @@ void SShape::changeRotation()
 	}
 }
 
-void SShape::randomRotation()
-{
-	qreal tmp_randRotation = 90 * (rand() % 2);
-	this->setRotation(tmp_randRotation);
-}
-
 // ZShape
 ZShape::ZShape()
 {
@@ -422,12 +373,6 @@ void ZShape::changeRotation()
 	{
 		this->setRotation(0);
 	}
-}
-
-void ZShape::randomRotation()
-{
-	qreal tmp_randRotation = 90 * (rand() % 2);
-	this->setRotation(tmp_randRotation);
 }
 
 BaseShape * ShapeFactory::createShape( int shapeType )

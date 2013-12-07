@@ -9,13 +9,19 @@
 #include <vector>
 #include <QByteArray>
 
+enum ZoneOwner
+{
+	SELF,
+	OPPOSITE
+};
+
 typedef std::vector<qreal> FullRow_Vec;
 
 class GameZone : public QGraphicsView
 {
 	Q_OBJECT
 public:
-	GameZone(QWidget * parent = 0);
+	GameZone(QWidget * parent = 0, ZoneOwner owner = SELF);
 	~GameZone();
 
 	void gameStart();
@@ -40,6 +46,9 @@ private:
 	qreal				m_fOldRotation;
 	int					m_iSeed;
 	int					m_iNextShape;
+	ZoneOwner			m_eOwner;
+
+	GameZone & operator=(const GameZone &);
 
 	void setShapeInitPos();
 	void moveClearedRowsDown(const FullRow_Vec &);

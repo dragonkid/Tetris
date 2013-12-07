@@ -51,10 +51,10 @@ void Tetris::initTetris( PlayMode mode )
 			// Initiate status bar.
 			this->showStatusMsg("Network mode.");
 			// Initiate self game zone.
-			m_pSelfGameZone = new GameZone(m_pCentralWidget);
+			m_pSelfGameZone = new GameZone(m_pCentralWidget, SELF);
 			connect(m_pSelfGameZone, SIGNAL(nextShapeIs(int)), this, SLOT(previewNextShape(int)));
 			// Initiate opposite game zone.
-			m_pOppsiteGameZone = new GameZone(m_pCentralWidget);
+			m_pOppsiteGameZone = new GameZone(m_pCentralWidget, OPPOSITE);
 			// Initiate and layout middle zone.
 			this->initMiddleZone(mode);
 			// Layout.
@@ -67,14 +67,14 @@ void Tetris::initTetris( PlayMode mode )
 			this->setCentralWidget(m_pCentralWidget);
 			// Set key press focus.
 			m_pSelfGameZone->setFocus();
-			// Initiate network.
+			m_pOppsiteGameZone->setFocusPolicy(Qt::NoFocus);
+			// Initiate network and signals.
 			m_pBaseNetwork = new BaseNetwork();
 			connect(m_pBaseNetwork, SIGNAL(errorOccur(QString)), this, SLOT(showStatusMsg(QString)));
 			connect(m_pBaseNetwork, SIGNAL(connReqAccepted()), this, SLOT(connEstablished()));
 			connect(m_pSelfGameZone, SIGNAL(keyPressed(QByteArray)), m_pBaseNetwork, SLOT(sendData(QByteArray)));
+			bool tmp = connect(m_pBaseNetwork, SIGNAL(dataReceived(QByteArray)), this, SLOT(recvData(QByteArray)));
 			m_pBaseNetwork->newListen();
-			// Game start.
-			//m_pSelfGameZone->gameStart();
 		}
 		break;
 	case SINGLE:
@@ -159,6 +159,7 @@ void Tetris::connRequest()
 	QString tmp_strOppositeIP = m_pEditIP->text();
 	m_pBaseNetwork->createConnection(tmp_strOppositeIP);
 	this->exchangeRandomSeed();
+	this->startGame();
 }
 
 void Tetris::connEstablished()
@@ -166,6 +167,7 @@ void Tetris::connEstablished()
 	this->showStatusMsg("Connection established.");
 	this->exchangeRandomSeed();
 	m_pConnectButton->setDisabled(true);
+	this->startGame();
 }
 
 void Tetris::exchangeRandomSeed()
@@ -177,10 +179,22 @@ void Tetris::exchangeRandomSeed()
 	QByteArray tmp_qData = m_pBaseNetwork->waitForGetData();
 	if ( tmp_qData.isEmpty() )
 	{
-		this->showStatusMsg("Connection error occured.");
+		this->showStatusMsg("Connection error occure.");
 		return ;
 	}
 	m_pOppsiteGameZone->setRandomSeed(QString(tmp_qData).toInt());
 	// debug
-	this->showStatusMsg("Self: " + QString::number(m_pSelfGameZone->getRandomSeed()) + "\tOpposite: " + QString(tmp_qData));
+	this->showStatusMsg("Self: " + QString::number(m_pSelfGameZone->getRandomSeed()) + "\tOpposite: " + QString::number(m_pOppsiteGameZone->getRandomSeed()));
+}
+
+void Tetris::recvData( QByteArray data )
+{
+	int tmp_iKey= QString(data).toInt();
+	m_pOppsiteGameZone->gameControl(tmp_iKey);
+}
+
+void Tetris::startGame()
+{
+	m_pSelfGameZone->gameStart();
+	m_pOppsiteGameZone->gameStart();
 }

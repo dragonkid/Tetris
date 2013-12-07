@@ -57,7 +57,6 @@ public:
 	void resetTimer();	// Open for better user experience.
 	bool isColliding() const;
 	bool isFixed() const;
-	virtual void randomRotation() = 0;	// Unused now.
 	virtual void changeRotation() = 0;
 	virtual QRectF boundingRect() const;
 protected:
@@ -84,7 +83,6 @@ public:
 	~IShape();
 
 	virtual void changeRotation();
-	virtual void randomRotation();
 protected:
 private:
 };
@@ -96,7 +94,6 @@ public:
 	~JShape();
 
 	virtual void changeRotation();
-	virtual void randomRotation();
 protected:
 private:
 };
@@ -108,7 +105,6 @@ public:
 	~LShape();
 
 	virtual void changeRotation();
-	virtual void randomRotation();
 protected:
 private:
 };
@@ -120,7 +116,6 @@ public:
 	~TShape();
 
 	virtual void changeRotation();
-	virtual void randomRotation();
 protected:
 private:
 };
@@ -132,7 +127,6 @@ public:
 	~OShape();
 
 	virtual void changeRotation();
-	virtual void randomRotation();
 protected:
 private:
 };
@@ -144,7 +138,6 @@ public:
 	~SShape();
 
 	virtual void changeRotation();
-	virtual void randomRotation();
 protected:
 private:
 };
@@ -156,7 +149,6 @@ public:
 	~ZShape();
 
 	virtual void changeRotation();
-	virtual void randomRotation();
 protected:
 private:
 };

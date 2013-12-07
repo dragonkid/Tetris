@@ -44,8 +44,6 @@ void BaseNetwork::createConnection( const QString ipAddr )
 {
 	m_pTcpSocket->connectToHost(ipAddr, PORT);
 	connect(m_pTcpSocket, SIGNAL(readyRead()), this, SLOT(recvData()));
-	// Exchange seed.
-//	m_pTcpSocket->write(QByteArray::number(m_pSelfGameZone->getRandomSeed()));
 }
 
 void BaseNetwork::acceptConnection()
@@ -98,11 +96,10 @@ BaseNetwork::~BaseNetwork()
 
 QByteArray BaseNetwork::waitForGetData( int timeout )
 {
-	bool debug = disconnect(m_pTcpSocket, SIGNAL(readyRead()), this, SLOT(recvData()));
+	disconnect(m_pTcpSocket, SIGNAL(readyRead()), this, SLOT(recvData()));
 	QByteArray tmp_qData;
 	if ( m_pTcpSocket->waitForReadyRead(timeout * 1000) )
 	{
-		//m_pOppsiteGameZone->setRandomSeed(QString(m_pTcpSocket->readAll()).toInt());
 		tmp_qData = m_pTcpSocket->readAll();
 	}
 	connect(m_pTcpSocket, SIGNAL(readyRead()), this, SLOT(recvData()));

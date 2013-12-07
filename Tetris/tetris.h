@@ -49,11 +49,13 @@ private:
 	void initTetris( PlayMode mode );
 	void initMiddleZone( PlayMode mode );
 	void exchangeRandomSeed();
+	void startGame();
 private slots:
 	void previewNextShape(int);
 	void connRequest();
 	void connEstablished();
 	void showStatusMsg(QString);
+	void recvData(QByteArray);
 };
 
 #endif // TETRIS_H
