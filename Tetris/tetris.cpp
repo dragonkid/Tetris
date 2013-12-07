@@ -69,9 +69,8 @@ void Tetris::initTetris( PlayMode mode )
 			m_pSelfGameZone->setFocus();
 			// Initiate network.
 			m_pBaseNetwork = new BaseNetwork();
-			bool tmp_bTest;
 			connect(m_pBaseNetwork, SIGNAL(errorOccur(QString)), this, SLOT(showStatusMsg(QString)));
-			connect(m_pBaseNetwork, SIGNAL(connEstablished()), this, SLOT(connEstablished()));
+			connect(m_pBaseNetwork, SIGNAL(connReqAccepted()), this, SLOT(connEstablished()));
 			connect(m_pSelfGameZone, SIGNAL(keyPressed(QByteArray)), m_pBaseNetwork, SLOT(sendData(QByteArray)));
 			m_pBaseNetwork->newListen();
 			// Game start.
@@ -138,7 +137,7 @@ void Tetris::initMiddleZone(PlayMode mode)
 	if ( NETWORK == mode )
 	{
 		m_pConnectButton = new QPushButton("Connect", m_pCentralWidget);
-		connect(m_pConnectButton, SIGNAL(clicked()), this, SLOT(establishConnection()));
+		connect(m_pConnectButton, SIGNAL(clicked()), this, SLOT(connRequest()));
 		m_pLabelIP = new QLabel("Opposite IP:", m_pCentralWidget);
 		m_pEditIP = new QLineEdit(m_pCentralWidget);
 		m_pEditIP->setInputMask("000.000.000.000");
@@ -155,15 +154,33 @@ void Tetris::showStatusMsg( QString msg )
 	this->statusBar()->showMessage(msg);
 }
 
-void Tetris::establishConnection()
+void Tetris::connRequest()
 {
 	QString tmp_strOppositeIP = m_pEditIP->text();
 	m_pBaseNetwork->createConnection(tmp_strOppositeIP);
-	//this->showStatusMsg(m_pEditIP->text());
+	this->exchangeRandomSeed();
 }
 
 void Tetris::connEstablished()
 {
 	this->showStatusMsg("Connection established.");
+	this->exchangeRandomSeed();
 	m_pConnectButton->setDisabled(true);
+}
+
+void Tetris::exchangeRandomSeed()
+{
+	// Exchange random seed when connection established.
+	// Send self random seed.
+	m_pBaseNetwork->sendData(QByteArray::number(m_pSelfGameZone->getRandomSeed()));
+	// Get opposite random seed.
+	QByteArray tmp_qData = m_pBaseNetwork->waitForGetData();
+	if ( tmp_qData.isEmpty() )
+	{
+		this->showStatusMsg("Connection error occured.");
+		return ;
+	}
+	m_pOppsiteGameZone->setRandomSeed(QString(tmp_qData).toInt());
+	// debug
+	this->showStatusMsg("Self: " + QString::number(m_pSelfGameZone->getRandomSeed()) + "\tOpposite: " + QString(tmp_qData));
 }

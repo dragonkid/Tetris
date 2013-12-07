@@ -48,9 +48,10 @@ private:
 
 	void initTetris( PlayMode mode );
 	void initMiddleZone( PlayMode mode );
+	void exchangeRandomSeed();
 private slots:
 	void previewNextShape(int);
-	void establishConnection();
+	void connRequest();
 	void connEstablished();
 	void showStatusMsg(QString);
 };
