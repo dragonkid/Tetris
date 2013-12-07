@@ -33,7 +33,7 @@ void BaseNetwork::newListen()
 	if ( false == m_pTcpServer->listen(QHostAddress::Any, PORT) )
 	{
 		// When debug, both run in one machine. So this line need to be annotated.
-		//m_pTcpSocket->close();
+		m_pTcpSocket->close();
 		emit errorOccur(m_pTcpServer->errorString());
 		return ;
 	}
@@ -56,17 +56,6 @@ void BaseNetwork::acceptConnection()
 		emit connReqAccepted();
 	}
 }
-
-//void basenetwork::senddata( int data )
-//{
-//	m_ptcpsocket->write(qbytearray::number(data));
-//}
-
-//void BaseNetwork::recvData()
-//{
-//	int tmp_iKeyPressed = QString(m_pTcpSocket->readAll()).toInt();
-////	m_pOppsiteGameZone->gameControl(tmp_iKeyPressed);
-//}
 
 void BaseNetwork::emitSocketError( QAbstractSocket::SocketError )
 {
