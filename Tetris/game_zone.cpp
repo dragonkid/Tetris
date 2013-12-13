@@ -13,8 +13,8 @@ static const qreal YNUM = 26;
 GameZone::GameZone(QWidget * parent, ZoneOwner owner)
 	: SCENE_WIDTH(XNUM * BLOCK_SIZE), 
 	  SCENE_HEIGHT(YNUM * BLOCK_SIZE),
-	  ZONE_WIDTH(SCENE_WIDTH + SCENE_OFFSET),
-	  ZONE_HEIGHT(SCENE_HEIGHT + SCENE_OFFSET),
+	  ZONE_WIDTH(SCENE_WIDTH + SCENE_OFFSET * 2),
+	  ZONE_HEIGHT(SCENE_HEIGHT + SCENE_OFFSET * 2),
 	  BACKGROUND_COLOE(Qt::lightGray),
 	  m_iSeed(time(NULL)),
 	  m_iNextShape(~0),
